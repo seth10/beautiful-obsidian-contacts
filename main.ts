@@ -3,7 +3,7 @@ import { Plugin, MarkdownPostProcessorContext, TFile } from 'obsidian';
 export default class ContactCardPlugin extends Plugin {
 	async onload() {
 		// Register a markdown post processor to look for frontmatter in each note
-		this.registerMarkdownPostProcessor((element: HTMLElement, context: MarkdownPostProcessorContext) => {
+		this.registerMarkdownPostProcessor((element: HTMLElement, context: MarkdownPostProcessorContext) => {			
 			// Retrieve the TFile from the source path
 			const file = this.app.vault.getAbstractFileByPath(context.sourcePath);
 			if (file instanceof TFile) {
@@ -18,17 +18,13 @@ export default class ContactCardPlugin extends Plugin {
 					const insta = frontmatter["insta"] ?? "No Instagram";
 			
 					// Create a contact card div element
-					const contactCard = document.createElement("div");
-					contactCard.className = "contact-card";
-					contactCard.innerHTML = `
-					<div class="contact-name">${name}</div>
-					<div class="contact-field">📞 ${phone}</div>
-					<div class="contact-field">📧 <a href="mailto:${email}">${email}</a></div>
-					<div class="contact-field">🔗 <a href="https://www.instagram.com/${insta}/" target="_blank">@${insta}</a></div>
-					`;
-			
-					// Append the contact card to the current element
-					element.appendChild(contactCard);
+					const contactCard = element.createDiv({ cls: 'contact-card' });
+					const nameDiv = contactCard.createDiv({ cls: 'contact-name', text: name})
+					const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: `📞 ${phone}`})
+					const emailDiv = contactCard.createDiv({ cls: 'contact-field', text: '📧 '})
+					const emailLink = emailDiv.createEl('a', { href: 'mailto:${email}', text: email})
+					const instaDiv = contactCard.createDiv({ cls: 'contact-field', text: '🔗 '})
+					const instaLink = instaDiv.createEl('a', { href: 'https://www.instagram.com/${insta}/', text: '@'+insta})
 				}
 			}
 		});
