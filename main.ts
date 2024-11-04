@@ -22,9 +22,9 @@ export default class ContactCardPlugin extends Plugin {
 					contactCard.className = "contact-card";
 					contactCard.innerHTML = `
 					<div class="contact-name">${name}</div>
-					<div class="contact-phone">📞 ${phone}</div>
-					<div class="contact-email">📧 <a href="mailto:${email}">${email}</a></div>
-					<div class="contact-website">🔗 <a href="https://www.instagram.com/${insta}/" target="_blank">@${insta}</a></div>
+					<div class="contact-field">📞 ${phone}</div>
+					<div class="contact-field">📧 <a href="mailto:${email}">${email}</a></div>
+					<div class="contact-field">🔗 <a href="https://www.instagram.com/${insta}/" target="_blank">@${insta}</a></div>
 					`;
 			
 					// Append the contact card to the current element

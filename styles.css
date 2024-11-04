@@ -1,8 +1,17 @@
-/*
-
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
-*/
+.contact-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    max-width: 300px;
+  }
+  
+  .contact-card .contact-name {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  .contact-card .contact-field {
+    margin: 5px 0;
+  }
+  
