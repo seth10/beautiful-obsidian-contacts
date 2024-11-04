@@ -1,6 +1,6 @@
 # Beautiful Obsidian Contacts
 
-This is a plugin for Obsidian (https://obsidian.md). It will render a contact card given the data present in a `contact` code block.
+This is a plugin for Obsidian (https://obsidian.md). It will render a contact card given the data present in a "contact" code block.
 
 ## Example
 ````
