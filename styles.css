@@ -1,17 +1,23 @@
 .contact-card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    max-width: 300px;
-  }
-  
-  .contact-card .contact-name {
-    font-size: 1.2em;
-    font-weight: bold;
-  }
-  
-  .contact-card .contact-field {
-    margin: 5px 0;
-  }
-  
+    border: var(--border-width) solid var(--color-base-50);
+    padding: var(--size-4-1);
+    padding-top: 0;
+    border-radius: var(--radius-s);
+    background-color: var(--background-primary-alt);
+    max-width: var(--metadata-max-width);
+}
+
+.contact-card .contact-name {
+    color: var(--h5-color);
+    font: var(--h5-font);
+    line-height: var(--h5-line-height);
+    font-size: var(--h5-size);
+    font-style: var(--h5-style);
+    font-variant: var(--h5-variant);
+    font-weight: var(--h5-weight);
+}
+
+.contact-card .contact-name,
+.contact-card .contact-field {
+    margin: var(--size-4-1);
+}
