@@ -1,7 +1,7 @@
 import { Plugin, MarkdownPostProcessorContext } from 'obsidian';
 
-interface StringOrStringsMap {
-    [key: string]: string | string[];
+interface StringToStringArr {
+    [key: string]: string[];
 }
 
 interface Contact {
@@ -11,26 +11,22 @@ interface Contact {
     insta: string[];
 }
 
-function parseStringsToMap(strings: string[]): StringOrStringsMap {
-	const result: StringOrStringsMap = {};
+function parseStringsToMap(strings: string[]): StringToStringArr {
+	const result: StringToStringArr = {};
 
 	strings.forEach(str => {
 		const [keyPart, valuePart] = str.split(':');
 
 		if (valuePart !== undefined) {
 			const key = keyPart.trim();
-			let value: string | string[] = valuePart.trim();
 
-			// Check if the value is a list
-			if (value.startsWith('[') && value.endsWith(']')) {
-				// Remove brackets and split by comma
-				value = value.slice(1, -1).split(',').map(item => item.trim());
+			let valueTrimmed = valuePart.trim();
+			if (valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']')) {
+				// Remove brackets
+				valueTrimmed = valueTrimmed.slice(1, -1);
 			}
 
-			// If the value is a list of one item, make it a single item (no brackets)
-			if (value.length == 1) {
-				value = value[0];
-			}
+			const value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
 
 			result[key] = value;
 		}
@@ -39,7 +35,7 @@ function parseStringsToMap(strings: string[]): StringOrStringsMap {
 	return result;
 }
 
-function parseMapToContact(map: StringOrStringsMap): Contact | null {
+function parseMapToContact(map: StringToStringArr): Contact | null {
 	let name = '<no name>';
 	if (typeof map['name'] == 'string') {
 		name = map['name'];
@@ -49,9 +45,9 @@ function parseMapToContact(map: StringOrStringsMap): Contact | null {
 
 	const contact: Contact = {
 		name: name,
-		phone: map['phone'] ? ensureArray(map['phone']) : [],
-		email: map['email'] ? ensureArray(map['email']) : [],
-		insta: map['insta'] ? ensureArray(map['insta']) : []
+		phone: map['phone'] ?? [],
+		email: map['email'] ?? [],
+		insta: map['insta'] ?? []
 	};
 
 	if (contact.phone) {
@@ -65,14 +61,6 @@ function parseMapToContact(map: StringOrStringsMap): Contact | null {
 	}
 
 	return contact;
-}
-
-function ensureArray(value: string | string[]): string[] {
-	if (typeof value === 'string') {
-		return [value]; // Return as a single-element array
-	}
-	// If it's an array, return it as is
-	return value;
 }
 
 function formatPhoneNumber(phone: string): string {
