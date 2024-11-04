@@ -1,25 +1,31 @@
 # Beautiful Obsidian Contacts
 
-This is a plugin for Obsidian (https://obsidian.md). It will render a contact card given the data present in the frontmatter.
+This is a plugin for Obsidian (https://obsidian.md). It will render a contact card given the data present in a `contact` code block.
 
-## Releasing new releases
+## Example
+````
+Some other text in your note.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+```contact
+name: First Last
+phone: 5551234567
+email: user@example.com
+insta: username
+```
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+Some further text in your note.
+````
 
-## Adding your plugin to the community plugin list
+### Output
+![An Obsidian window showing a note in editing mode with a card rendered in the middle, containing a name and linked contact info](example-output.png)
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## Formatting details
+Keys and values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Empty list items will be ignored.
 
-## API Documentation
+If a list of names is provided, only the first will be rendered.
 
-See https://github.com/obsidianmd/obsidian-api
+Phone numbers may include a country code, but if it's excluded then +1 will be assumed. Formatting like +, (), and - may be included or excluded, but will be rendered in this standard format regardless. Each phone number will render two links: one to call, and one to message.
+
+Emails won't be rendered if they don't appear to be a valid email address.
+
+Instagram usernames may include or exclude the preceeding @ sign.
