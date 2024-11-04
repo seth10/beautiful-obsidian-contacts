@@ -94,6 +94,8 @@ export default class ContactCardPlugin extends Plugin {
 				contact.phone.forEach(phone => {
 					const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: '📞 '});
 					phoneDiv.createEl('a', { href: 'tel:'+phone, text: phone});
+					const messageDiv = contactCard.createDiv({ cls: 'contact-field', text: '💬 '});
+					messageDiv.createEl('a', { href: 'sms:'+phone, text: phone});
 				});
 				contact.email.forEach(email => {
 					const emailDiv = contactCard.createDiv({ cls: 'contact-field', text: '📧 '});
