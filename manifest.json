@@ -5,6 +5,6 @@
 	"minAppVersion": "0.15.0",
 	"description": "Renders \"contact\" code blocks with tappable links for phone, social media, etc.",
 	"author": "Seth Tenembaum",
-	"authorUrl": "https://github.com/seth10/beautiful-obsidian-contacts",
+	"authorUrl": "",
 	"isDesktopOnly": false
 }
