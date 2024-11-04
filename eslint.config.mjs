@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 });
 
 export default [{
-    ignores: ["**/node_modules/", "**/main.js"],
+    ignores: ["node_modules/*", "**/main.js"],
 }, ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -45,5 +45,9 @@ export default [{
         "@typescript-eslint/ban-ts-comment": "off",
         "no-prototype-builtins": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "no-trailing-spaces": ["error"],
+        semi: ["error", "always"],
+        indent: ["error", "tab"],
+        quotes: ["error", "single"],
     },
 }];
