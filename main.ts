@@ -18,7 +18,7 @@ function parseStringsToMap(strings: string[]): StringToStringArr {
 		const [keyPart, valuePart] = str.split(':');
 
 		if (valuePart !== undefined) {
-			const key = keyPart.trim();
+			const key = keyPart.trim().toLowerCase();
 
 			let valueTrimmed = valuePart.trim();
 			if (valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']')) {
