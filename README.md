@@ -20,8 +20,15 @@ Some further text in your note.
 ### Output
 ![An Obsidian window showing a note in editing mode with a card rendered in the middle, containing a name and linked contact info](example-output.png)
 
+## Supported fields
+- `name`
+- `phone`
+- `email`
+- `insta`
+- `discord`
+
 ## Formatting details
-Keys and values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Empty list items will be ignored.
+Fields and their values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored.
 
 If a list of names is provided, only the first will be rendered.
 
