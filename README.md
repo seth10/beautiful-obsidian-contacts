@@ -11,6 +11,7 @@ name: First Last
 phone: 5551234567
 email: user@example.com
 insta: username
+discord: <username:1234567890123456789>
 ```
 
 Some further text in your note.
@@ -29,3 +30,5 @@ Phone numbers may include a country code, but if it's excluded then +1 will be a
 Emails won't be rendered if they don't appear to be a valid email address.
 
 Instagram usernames may include or exclude the preceeding @ sign.
+
+You may provide Discord username(s); or, if you would like a convenient link to directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. For how to obtain the channel ID, please reference https://wiki.discord.id/obtain-ids/desktop.

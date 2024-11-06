@@ -9,6 +9,12 @@ interface Contact {
     phone: string[];
     email: string[];
     insta: string[];
+	discord: Discord[];
+}
+
+interface Discord {
+	handle: string;
+	dm_channel_id?: string;
 }
 
 function parseStringsToMap(strings: string[]): StringToStringArr {
@@ -47,7 +53,8 @@ function parseMapToContact(map: StringToStringArr): Contact | null {
 		name: name,
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
-		insta: map['insta'] ?? []
+		insta: map['insta'] ?? [],
+		discord: map['discord'].map(stringToDiscordHandleAndChannelId) ?? []
 	};
 
 	if (contact.phone) {
@@ -61,6 +68,28 @@ function parseMapToContact(map: StringToStringArr): Contact | null {
 	}
 
 	return contact;
+}
+
+function stringToDiscordHandleAndChannelId(text: string): Discord {
+	const cleanedText = (text.startsWith('<') && text.endsWith('>'))
+		? text.slice(1, -1)
+		: text;
+	if (cleanedText.contains('|')) {
+		const [handle, dm_channel_id] = cleanedText.split('|');
+		if (isNaN(Number(dm_channel_id))) {
+			return {
+				handle: handle
+			};
+		}
+		return {
+			handle: handle,
+			dm_channel_id: dm_channel_id
+		};
+	} else {
+		return {
+			handle: cleanedText
+		};
+	}
 }
 
 function formatPhoneNumber(phone: string): string {
@@ -104,6 +133,14 @@ export default class ContactCardPlugin extends Plugin {
 				contact.insta.forEach(insta => {
 					const instaDiv = contactCard.createDiv({ cls: 'contact-field', text: '📷 '});
 					instaDiv.createEl('a', { href: `https://www.instagram.com/${insta}/`, text: '@'+insta});
+				});
+				contact.discord.forEach(discord => {
+					if (discord.dm_channel_id) {
+						const discordDiv = contactCard.createDiv({ cls: 'contact-field', text: '🎮 '});
+						discordDiv.createEl('a', { href: `discord://-/channels/@me/${discord.dm_channel_id}`, text: discord.handle});
+					} else {
+						contactCard.createDiv({ cls: 'contact-field', text: '🎮 '+discord.handle});
+					}
 				});
 			}
 		});
