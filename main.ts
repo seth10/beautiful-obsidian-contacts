@@ -48,12 +48,12 @@ function parseStringsToMap(strings: string[]): StringToStringArr {
 
 function parseMapToContact(map: StringToStringArr): Contact | null {
 	const contact: Contact = {
-		name: (map['name'] ?? ['<no name>'])[0],
-		nickname: map['name'].slice(1),
+		name: (map['name'] ?? [])[0],
+		nickname: (map['name'] ?? []).slice(1),
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
-		discord: map['discord'].map(stringToDiscordHandleAndChannelId) ?? []
+		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId)
 	};
 
 	if (contact.phone) {
@@ -118,7 +118,9 @@ export default class ContactCardPlugin extends Plugin {
 
 			if (contact) {
 				const contactCard = element.createDiv({ cls: 'contact-card' });
-				contactCard.createDiv({ cls: 'contact-name', text: contact.name});
+				if (contact.name) {
+					contactCard.createDiv({ cls: 'contact-name', text: contact.name});
+				}
 				if (contact.nickname.length > 0) {
 					contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}`});
 				}
