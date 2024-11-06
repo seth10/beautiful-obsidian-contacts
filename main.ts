@@ -115,8 +115,23 @@ function removeLeadingAt(input: string): string {
 	return input.startsWith('@') ? input.slice(1) : input;
 }
 
-function calculateAge(birthdateString: string): number | null {
-	const birthdate = new Date(birthdateString);
+function formatBirthday(birthdayString: string): string | null {
+	const birthdate = new Date(birthdayString);
+
+	// Check if the date parsing was successful
+	if (isNaN(birthdate.getTime())) {
+		return null;
+	} else {
+		return Intl.DateTimeFormat('en-US', {
+			month: 'short',   // Three-letter month abbreviation
+			day: 'numeric',   // Day with one or two digits
+			year: 'numeric'   // Four-digit year
+		}).format(birthdate);
+	}
+}
+
+function calculateAge(birthdayString: string): number | null {
+	const birthdate = new Date(birthdayString);
 
 	// Check if the date parsing was successful
 	if (isNaN(birthdate.getTime())) {
@@ -153,9 +168,10 @@ export default class ContactCardPlugin extends Plugin {
 					contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}`});
 				}
 				if (contact.birthday) {
+					const birthdayString = formatBirthday(contact.birthday) ?? contact.birthday;
 					const age = calculateAge(contact.birthday);
 					const ageString = age ? ` (${age} years old)` : '';
-					contactCard.createDiv({ cls: 'contact-field', text: `Birthday: ${contact.birthday}${ageString}`});
+					contactCard.createDiv({ cls: 'contact-field', text: `Birthday: ${birthdayString}${ageString}`});
 				}
 				contact.phone.forEach(phone => {
 					const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: '📞 '});
