@@ -6,6 +6,7 @@ interface StringToStringArr {
 
 interface Contact {
     name: string;
+	nickname: string[];
     phone: string[];
     email: string[];
     insta: string[];
@@ -46,15 +47,9 @@ function parseStringsToMap(strings: string[]): StringToStringArr {
 }
 
 function parseMapToContact(map: StringToStringArr): Contact | null {
-	let name = '<no name>';
-	if (typeof map['name'] == 'string') {
-		name = map['name'];
-	} else if (map['name'] instanceof Array && map['name'].length > 0) {
-		name = map['name'][0];
-	}
-
 	const contact: Contact = {
-		name: name,
+		name: (map['name'] ?? ['<no name>'])[0],
+		nickname: map['name'].slice(1),
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
@@ -124,6 +119,9 @@ export default class ContactCardPlugin extends Plugin {
 			if (contact) {
 				const contactCard = element.createDiv({ cls: 'contact-card' });
 				contactCard.createDiv({ cls: 'contact-name', text: contact.name});
+				if (contact.nickname.length > 0) {
+					contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}`});
+				}
 				contact.phone.forEach(phone => {
 					const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: '📞 '});
 					phoneDiv.createEl('a', { href: 'tel:'+phone, text: phone});

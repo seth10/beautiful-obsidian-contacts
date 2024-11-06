@@ -7,11 +7,12 @@ This is a plugin for Obsidian (https://obsidian.md). It will render a contact ca
 Some other text in your note.
 
 ```contact
-name: First Last
+name: First Last, "The Boss"
 phone: 5551234567
 email: user@example.com
-insta: username
-discord: <username:1234567890123456789>
+email: work@workplace.com
+insta: [username, food_insta_username]
+discord: <username|1234567890123456789>
 ```
 
 Some further text in your note.
@@ -28,9 +29,9 @@ Some further text in your note.
 - `discord`
 
 ## Formatting details
-Fields and their values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored.
+Fields and their values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored. You can also provide additional phone numbers, emails, etc. on separate lines as long as it starts with the field name and a colon.
 
-If a list of names is provided, only the first will be rendered.
+If you provide multiple names, any subsequent names after the first will be listed as nicknames.
 
 Phone numbers may include a country code, but if it's excluded then +1 will be assumed. Formatting like +, (), and - may be included or excluded, but will be rendered in this standard format regardless. Each phone number will render two links: one to call, and one to message.
 
