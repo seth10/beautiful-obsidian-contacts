@@ -34,7 +34,11 @@ function parseStringsToMap(strings: string[]): StringToStringArr {
 
 			const value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
 
-			result[key] = value;
+			if (Array.isArray(result[key])) {
+				result[key].push(...value);
+			} else {
+				result[key] = value;
+			}
 		}
 	});
 
