@@ -8,6 +8,7 @@ Some other text in your note.
 
 ```contact
 name: First Last, "The Boss"
+birthday: Jan 1, 2000
 phone: 5551234567
 email: user@example.com
 email: work@workplace.com
@@ -23,6 +24,7 @@ Some further text in your note.
 
 ## Supported fields
 - `name`
+- `birthday`
 - `phone`
 - `email`
 - `insta`
@@ -32,6 +34,8 @@ Some further text in your note.
 Fields and their values are separated by a colon. Any value may may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored. You can also provide additional phone numbers, emails, etc. on separate lines as long as it starts with the field name and a colon.
 
 If you provide multiple names, any subsequent names after the first will be listed as nicknames.
+
+If you provide a [valid birthday](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#date_string), a calculated age will be displayed. If not the provided birthday will be displayed as-is.
 
 Phone numbers may include a country code, but if it's excluded then +1 will be assumed. Formatting like +, (), and - may be included or excluded, but will be rendered in this standard format regardless. Each phone number will render two links: one to call, and one to message.
 

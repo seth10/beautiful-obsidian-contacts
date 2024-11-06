@@ -7,6 +7,7 @@ interface StringToStringArr {
 interface Contact {
     name: string;
 	nickname: string[];
+	birthday: string;
     phone: string[];
     email: string[];
     insta: string[];
@@ -33,7 +34,12 @@ function parseStringsToMap(strings: string[]): StringToStringArr {
 				valueTrimmed = valueTrimmed.slice(1, -1);
 			}
 
-			const value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
+			let value;
+			if (key == 'birthday') {
+				value = [valueTrimmed];
+			} else {
+				value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
+			}
 
 			if (Array.isArray(result[key])) {
 				result[key].push(...value);
@@ -50,6 +56,7 @@ function parseMapToContact(map: StringToStringArr): Contact | null {
 	const contact: Contact = {
 		name: (map['name'] ?? [])[0],
 		nickname: (map['name'] ?? []).slice(1),
+		birthday: (map['birthday'] ?? [])[0],
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
@@ -108,6 +115,27 @@ function removeLeadingAt(input: string): string {
 	return input.startsWith('@') ? input.slice(1) : input;
 }
 
+function calculateAge(birthdateString: string): number | null {
+	const birthdate = new Date(birthdateString);
+
+	// Check if the date parsing was successful
+	if (isNaN(birthdate.getTime())) {
+	    return null;
+	}
+
+	const today = new Date();
+	let age = today.getFullYear() - birthdate.getFullYear();
+	const monthDifference = today.getMonth() - birthdate.getMonth();
+	const dayDifference = today.getDate() - birthdate.getDate();
+
+	// Adjust the age if the birthdate hasn't occurred yet this year
+	if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+	    age--;
+	}
+
+	return age;
+}
+
 export default class ContactCardPlugin extends Plugin {
 	async onload() {
 		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
@@ -123,6 +151,11 @@ export default class ContactCardPlugin extends Plugin {
 				}
 				if (contact.nickname.length > 0) {
 					contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}`});
+				}
+				if (contact.birthday) {
+					const age = calculateAge(contact.birthday);
+					const ageString = age ? ` (${age} years old)` : '';
+					contactCard.createDiv({ cls: 'contact-field', text: `Birthday: ${contact.birthday}${ageString}`});
 				}
 				contact.phone.forEach(phone => {
 					const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: '📞 '});
