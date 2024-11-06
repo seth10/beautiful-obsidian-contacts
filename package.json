@@ -1,6 +1,6 @@
 {
 	"name": "beautiful-contact-cards",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Renders \"contact\" code blocks with tappable links for phone, social media, etc.",
 	"main": "main.js",
 	"scripts": {
