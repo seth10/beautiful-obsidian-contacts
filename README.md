@@ -43,4 +43,4 @@ Emails won't be rendered if they don't appear to be a valid email address.
 
 Instagram usernames may include or exclude the preceeding @ sign.
 
-You may provide Discord username(s); or, if you would like a convenient link to directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. For how to obtain the channel ID, please reference https://wiki.discord.id/obtain-ids/desktop.
+You may provide Discord username(s); or, if you would like a convenient link to directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. For how to obtain the channel ID, please reference https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.

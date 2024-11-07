@@ -4,12 +4,14 @@ interface ContactCardPluginSettings {
 	birthdayDayFormat: string;
 	birthdayMonthFormat: string;
 	birthdayYearFormat: string;
+	discordClient: boolean;
 }
 
 const DEFAULT_SETTINGS: ContactCardPluginSettings = {
 	birthdayDayFormat: 'numeric',
 	birthdayMonthFormat: 'short',
-	birthdayYearFormat: 'numeric'
+	birthdayYearFormat: 'numeric',
+	discordClient: true
 };
 
 interface StringToStringArr {
@@ -212,7 +214,9 @@ export default class ContactCardPlugin extends Plugin {
 				contact.discord.forEach(discord => {
 					if (discord.dm_channel_id) {
 						const discordDiv = contactCard.createDiv({ cls: 'contact-field', text: '🎮 '});
-						discordDiv.createEl('a', { href: `discord://-/channels/@me/${discord.dm_channel_id}`, text: discord.handle});
+						discordDiv.createEl('a', {
+							href: (this.settings.discordClient ? 'discord://' : 'https://discord.com') + `/channels/@me/${discord.dm_channel_id}`,
+							text: discord.handle});
 					} else {
 						contactCard.createDiv({ cls: 'contact-field', text: '🎮 '+discord.handle});
 					}
@@ -277,6 +281,15 @@ class ContactCardSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.birthdayYearFormat)
 				.onChange(async (value) => {
 					this.plugin.settings.birthdayYearFormat = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Discord client installed')
+			.setDesc('Enable if you want to Discord links to open in your desktop/mobile client, disable if you want to open the Discord website')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.discordClient)
+				.onChange(async (value) => {
+					this.plugin.settings.discordClient = value;
 					await this.plugin.saveSettings();
 				}));
 	}
