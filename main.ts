@@ -1,4 +1,16 @@
-import { Plugin, MarkdownPostProcessorContext } from 'obsidian';
+import { App, MarkdownPostProcessorContext, Plugin, PluginSettingTab, Setting } from 'obsidian';
+
+interface ContactCardPluginSettings {
+	birthdayDayFormat: string;
+	birthdayMonthFormat: string;
+	birthdayYearFormat: string;
+}
+
+const DEFAULT_SETTINGS: ContactCardPluginSettings = {
+	birthdayDayFormat: 'numeric',
+	birthdayMonthFormat: 'short',
+	birthdayYearFormat: 'numeric'
+};
 
 interface StringToStringArr {
     [key: string]: string[];
@@ -115,7 +127,7 @@ function removeLeadingAt(input: string): string {
 	return input.startsWith('@') ? input.slice(1) : input;
 }
 
-function formatBirthday(birthdayString: string): string | null {
+function formatBirthday(birthdayString: string, dayFormat: string, monthFormat: string, yearFormat: string): string | null {
 	const birthdate = new Date(birthdayString);
 
 	// Check if the date parsing was successful
@@ -123,9 +135,10 @@ function formatBirthday(birthdayString: string): string | null {
 		return null;
 	} else {
 		return Intl.DateTimeFormat('en-US', {
-			month: 'short',   // Three-letter month abbreviation
-			day: 'numeric',   // Day with one or two digits
-			year: 'numeric'   // Four-digit year
+			// Warning! This can cause exceptions if the user types in an invalid string in the settings. This will cause the note to not render at all.
+			day: dayFormat as 'numeric' | '2-digit' | undefined,
+			month: monthFormat as 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined,
+			year: yearFormat as 'numeric' | '2-digit' | undefined
 		}).format(birthdate);
 	}
 }
@@ -152,7 +165,12 @@ function calculateAge(birthdayString: string): number | null {
 }
 
 export default class ContactCardPlugin extends Plugin {
+	settings: ContactCardPluginSettings;
+
 	async onload() {
+		await this.loadSettings();
+		this.addSettingTab(new ContactCardSettingTab(this.app, this));
+
 		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
 			// Each line of the code block with content
 			const rows = source.split('\n').map(row => row.trim()).filter(row => row.length > 0);
@@ -168,7 +186,12 @@ export default class ContactCardPlugin extends Plugin {
 					contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}`});
 				}
 				if (contact.birthday) {
-					const birthdayString = formatBirthday(contact.birthday) ?? contact.birthday;
+					const birthdayString = formatBirthday(
+						contact.birthday,
+						this.settings.birthdayDayFormat,
+						this.settings.birthdayMonthFormat,
+						this.settings.birthdayYearFormat
+					) ?? contact.birthday;
 					const age = calculateAge(contact.birthday);
 					const ageString = age ? ` (${age} years old)` : '';
 					contactCard.createDiv({ cls: 'contact-field', text: `Birthday: ${birthdayString}${ageString}`});
@@ -197,5 +220,59 @@ export default class ContactCardPlugin extends Plugin {
 				});
 			}
 		});
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
+}
+
+class ContactCardSettingTab extends PluginSettingTab {
+	plugin: ContactCardPlugin;
+
+	constructor(app: App, plugin: ContactCardPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
+	display(): void {
+		const {containerEl} = this;
+
+		containerEl.empty();
+
+		new Setting(containerEl)
+			.setName('Birthday day format')
+			.setDesc('Options: "numeric" to show a day with one or two digits, or "2-digit". Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#day')
+			.addText(text => text
+				.setPlaceholder('numeric')
+				.setValue(this.plugin.settings.birthdayDayFormat)
+				.onChange(async (value) => {
+					this.plugin.settings.birthdayDayFormat = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Birthday month format')
+			.setDesc('Options: "numeric" to show a month with one or two digits, "2-digit", "long" for the full month name, "short" for the three-letter month abbreviation, or "narrow" for a single-letter. Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#month')
+			.addText(text => text
+				.setPlaceholder('short')
+				.setValue(this.plugin.settings.birthdayMonthFormat)
+				.onChange(async (value) => {
+					this.plugin.settings.birthdayMonthFormat = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Birthday year format')
+			.setDesc('Options: "numeric" to show a 4-digit year, or "2-digit". Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#year')
+			.addText(text => text
+				.setPlaceholder('numeric')
+				.setValue(this.plugin.settings.birthdayYearFormat)
+				.onChange(async (value) => {
+					this.plugin.settings.birthdayYearFormat = value;
+					await this.plugin.saveSettings();
+				}));
 	}
 }
