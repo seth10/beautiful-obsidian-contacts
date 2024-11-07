@@ -135,7 +135,6 @@ function formatBirthday(birthdayString: string, dayFormat: string, monthFormat: 
 		return null;
 	} else {
 		return Intl.DateTimeFormat('en-US', {
-			// Warning! This can cause exceptions if the user types in an invalid string in the settings. This will cause the note to not render at all.
 			day: dayFormat as 'numeric' | '2-digit' | undefined,
 			month: monthFormat as 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined,
 			year: yearFormat as 'numeric' | '2-digit' | undefined
@@ -246,9 +245,10 @@ class ContactCardSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Birthday day format')
-			.setDesc('Options: "numeric" to show a day with one or two digits, or "2-digit". Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#day')
-			.addText(text => text
-				.setPlaceholder('numeric')
+			.setDesc('Display the day without or with a leading zero (when below 10)')
+			.addDropdown(dropdown => dropdown
+				.addOption('numeric', '3')
+				.addOption('2-digit', '03')
 				.setValue(this.plugin.settings.birthdayDayFormat)
 				.onChange(async (value) => {
 					this.plugin.settings.birthdayDayFormat = value;
@@ -256,9 +256,13 @@ class ContactCardSettingTab extends PluginSettingTab {
 				}));
 		new Setting(containerEl)
 			.setName('Birthday month format')
-			.setDesc('Options: "numeric" to show a month with one or two digits, "2-digit", "long" for the full month name, "short" for the three-letter month abbreviation, or "narrow" for a single-letter. Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#month')
-			.addText(text => text
-				.setPlaceholder('short')
+			.setDesc('Display the entire month name, the three-letter abbreviation, only the first letter, the number representation, or number with a leading zero (when below 10)')
+			.addDropdown(dropdown => dropdown
+				.addOption('long', 'March')
+				.addOption('short', 'Mar')
+				.addOption('narrow', 'M')
+				.addOption('numeric', '3')
+				.addOption('2-digit', '03')
 				.setValue(this.plugin.settings.birthdayMonthFormat)
 				.onChange(async (value) => {
 					this.plugin.settings.birthdayMonthFormat = value;
@@ -266,9 +270,10 @@ class ContactCardSettingTab extends PluginSettingTab {
 				}));
 		new Setting(containerEl)
 			.setName('Birthday year format')
-			.setDesc('Options: "numeric" to show a 4-digit year, or "2-digit". Refer to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#year')
-			.addText(text => text
-				.setPlaceholder('numeric')
+			.setDesc('Display the entire year or only the last two digits')
+			.addDropdown(dropdown => dropdown
+				.addOption('numeric', '1999')
+				.addOption('2-digit', '99')
 				.setValue(this.plugin.settings.birthdayYearFormat)
 				.onChange(async (value) => {
 					this.plugin.settings.birthdayYearFormat = value;

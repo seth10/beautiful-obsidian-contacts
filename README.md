@@ -35,7 +35,7 @@ Fields and their values are separated by a colon. Any value may may be a list, d
 
 If you provide multiple names, any subsequent names after the first will be listed as nicknames.
 
-If you provide a [valid birthday](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#date_string), it will be formatted and a calculated age will be displayed. If not, the provided birthday will be displayed as-is.
+If you provide a [valid birthday](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#date_string), it will be formatted and a calculated age will be displayed. If not, the provided birthday will be displayed as-is. You can set your preferences for how formatted dates are displayed in the "Beautiful Contact Cards" community plugin settings.
 
 Phone numbers may include a country code, but if it's excluded then +1 will be assumed. Formatting like +, (), and - may be included or excluded, but will be rendered in this standard format regardless. Each phone number will render two links: one to call, and one to message.
 
