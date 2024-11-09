@@ -129,17 +129,24 @@ function removeLeadingAt(input: string): string {
 	return input.startsWith('@') ? input.slice(1) : input;
 }
 
+// Matches 1900-2099 anywhere in the string (separated by some break), or 33-99 anywhere in the string
+const yearRegex = /\b(?:(?:19|20)[0-9]{2})|(?:3[3-9]|[4-9][0-9])\b/;
 function formatBirthday(birthdayString: string, dayFormat: string, monthFormat: string, yearFormat: string): string | null {
 	const birthdate = new Date(birthdayString);
 
 	// Check if the date parsing was successful
 	if (isNaN(birthdate.getTime())) {
 		return null;
-	} else {
+	} else if (yearRegex.test(birthdayString)) {
 		return Intl.DateTimeFormat('en-US', {
 			day: dayFormat as 'numeric' | '2-digit' | undefined,
 			month: monthFormat as 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined,
 			year: yearFormat as 'numeric' | '2-digit' | undefined
+		}).format(birthdate);
+	} else {
+		return Intl.DateTimeFormat('en-US', {
+			day: dayFormat as 'numeric' | '2-digit' | undefined,
+			month: monthFormat as 'numeric' | '2-digit' | 'long' | 'short' | 'narrow' | undefined
 		}).format(birthdate);
 	}
 }
@@ -150,6 +157,11 @@ function calculateAge(birthdayString: string): number | null {
 	// Check if the date parsing was successful
 	if (isNaN(birthdate.getTime())) {
 	    return null;
+	}
+
+	// If the original string has no year, don't return an age
+	if (!yearRegex.test(birthdayString)) {
+		return null;
 	}
 
 	const today = new Date();
