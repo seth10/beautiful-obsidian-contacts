@@ -233,6 +233,9 @@ export default class ContactCardPlugin extends Plugin {
 						contactCard.createDiv({ cls: 'contact-field', text: '🎮 '+discord.handle});
 					}
 				});
+				if (contactCard.childElementCount <= 1) {
+					contactCard.createDiv({ cls: 'contact-field', text: '(no contact info)'});
+				}
 			}
 		});
 	}
