@@ -1,0 +1,7 @@
+Add settings to not display names (unless that's the only piece of contact info)
+> If your contact's name is already the title of the note, it may seem redundant to display it in the contact card. Enable this option to hide the name header from all contact cards.
+make sure this plays nice with (no contact info) note
+
+Make rendering/links update once you adjust settings without having to close/reopen notes
+
+Add GitHub releases for each version
