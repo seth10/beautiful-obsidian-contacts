@@ -1,3 +1,19 @@
+/* On contact notes, hide Obsidian's raw Properties panel so the contact card is the only header.
+   Scoped to the `.beautiful-contact-note` class the plugin toggles on the markdown view container. */
+/* `!important` is required: Obsidian's core rule for `.metadata-container` inside the CM6 editor
+   has higher specificity than a plain descendant selector, so it would otherwise win on the
+   container (the "Properties" heading + "Add property" button) even while the rows get hidden. */
+.beautiful-contact-note .metadata-container,
+.beautiful-contact-note .markdown-properties {
+    display: none !important;
+}
+
+/* Give only the Live Preview frontmatter widget top spacing (it sits at the very top of the
+   editor). Scoped to the marker class so code-block cards in the editor are unaffected. */
+.contact-card-frontmatter {
+    margin-top: var(--size-4-4);
+}
+
 .contact-card {
     border: var(--border-width) solid var(--color-base-50);
     padding: var(--size-4-1);
@@ -20,4 +36,18 @@
 .contact-card .contact-name,
 .contact-card .contact-field {
     margin: var(--size-4-1);
+}
+
+/* Keep link underlines continuous. By default the editor (CodeMirror) uses
+   text-decoration-skip-ink: auto, which breaks the underline under the descending tail of the
+   "@" in emails; the reading view disables this, so the underline only breaks in editing mode. */
+.contact-card a {
+    text-decoration-skip-ink: none;
+}
+
+/* Reading view zeroes the top margin of the first element inside a rendered block, which would
+   collapse the card's intended top gap (the card uses padding-top: 0 and relies on this margin).
+   Restore it so reading mode matches Live Preview. */
+.markdown-reading-view .contact-card > :first-child {
+    margin-top: var(--size-4-1) !important;
 }
