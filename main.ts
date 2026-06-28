@@ -139,12 +139,25 @@ export default class ContactCardPlugin extends Plugin {
 		const data = await this.loadData();
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
 
-		// New installs (no data.json → loadData() returns null) keep the default (on).
 		// Users upgrading from a version that predates properties rendering have saved data that
 		// lacks this key — preserve their prior behavior by leaving the card off until they opt in
 		// via the "Render from properties" settings toggle.
+		//
+		// Caveat: this only works for upgraders who saved a setting at least once before upgrading,
+		// because pre-2.0.0 versions only wrote data.json from the settings tab. A user who never
+		// changed a setting wrote no data.json, so on first launch they are indistinguishable from a
+		// brand-new install (loadData() returns null) and will get the feature enabled by default.
+		// The lastSeenVersion stamp below ensures future upgrades always have a reliable signal.
 		if (data && !('renderFromProperties' in data)) {
 			this.settings.renderFromProperties = false;
+		}
+
+		// Stamp the current version so every install has a persisted data.json going forward, even
+		// when the user never opens the settings tab. saveData() is used directly (not saveSettings)
+		// to avoid triggering a view refresh during onload.
+		if (this.settings.lastSeenVersion !== this.manifest.version) {
+			this.settings.lastSeenVersion = this.manifest.version;
+			await this.saveData(this.settings);
 		}
 	}
 

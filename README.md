@@ -65,9 +65,9 @@ Instagram usernames may include or exclude the preceding @ sign.
 You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
 
 ## A note on updates
-If you installed this plugin prior to 2.0.0, the "Render from properties" option will be disabled by default. This is to avoid a surprising behavior change, where your existing notes with a "name" property start displaying a contact card when you might not expect it. To opt-in, just go to Settings, Community plugins, Beautiful Contact Cards, and enable "Render from properties".
+If you changed any plugin settings before upgrading to 2.0.0, the "Render from properties" option is disabled upon upgrade. This is to avoid a surprising behavior change, where your existing notes with name, email, etc. properties start displaying a contact card when you might not expect it. To opt in, go to Settings → Community plugins → Beautiful Contact Cards and enable "Render from properties".
 
-When installing this plugin for the first time at version 2.0.0 or beyond, "Render from properties" will be enabled by default.
+Given this can only be detected for users who saved a setting at least once, this upgrade to 2.0.0+ might enable "Render from properties" by default as with fresh installs. If you have existing notes with a recognized property (such as `name`) and don't want to display contact cards, simply disable "Render from properties" in the plugin settings.
 
 ## Statement on AI
 If you're staunchly against AI, remain at version 1.6.2. This version and all before were entirely hand-coded.

@@ -5,6 +5,10 @@ export interface ContactCardPluginSettings {
 	discordClient: boolean;
 	renderFromProperties: boolean;
 	hideProperties: boolean;
+	// Version of the plugin that last wrote data.json. Empty string means "never stamped" (a fresh
+	// install, or an upgrade from a version that didn't write this field). Used to give future
+	// upgrades a reliable signal even when the user never changes a setting.
+	lastSeenVersion: string;
 }
 
 export const DEFAULT_SETTINGS: ContactCardPluginSettings = {
@@ -13,7 +17,8 @@ export const DEFAULT_SETTINGS: ContactCardPluginSettings = {
 	birthdayYearFormat: 'numeric',
 	discordClient: true,
 	renderFromProperties: true,
-	hideProperties: true
+	hideProperties: true,
+	lastSeenVersion: ''
 };
 
 export interface StringToStringArr {
