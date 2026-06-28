@@ -1,3 +1,4 @@
+import { hasAddresses, parseAddresses } from './address';
 import { parseMapToContact } from './parse';
 import { Contact, StringToStringArr } from './types';
 
@@ -55,18 +56,24 @@ function frontmatterToMap(fm: Record<string, unknown>): StringToStringArr {
 	return map;
 }
 
-// True if the frontmatter contains at least one recognized contact field.
+// True if the frontmatter contains at least one recognized contact field (including an address).
 export function hasContactFields(fm: Record<string, unknown> | null | undefined): boolean {
 	if (!fm) {
 		return false;
 	}
-	return Object.keys(frontmatterToMap(fm)).length > 0;
+	return Object.keys(frontmatterToMap(fm)).length > 0 || hasAddresses(fm);
 }
 
 export function frontmatterToContact(fm: Record<string, unknown>): Contact | null {
 	const map = frontmatterToMap(fm);
-	if (Object.keys(map).length === 0) {
+	const addresses = parseAddresses(fm);
+	if (Object.keys(map).length === 0 && addresses.length === 0) {
 		return null;
 	}
-	return parseMapToContact(map);
+	const contact = parseMapToContact(map);
+	if (!contact) {
+		return null;
+	}
+	contact.addresses = addresses;
+	return contact;
 }

@@ -48,6 +48,7 @@ Some further text in your note.
 - `email`
 - `insta`
 - `discord`
+- `address` (see [Addresses](#addresses))
 
 ## Formatting details
 Fields and their values are separated by a colon. Any value may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored. You can also provide additional phone numbers, emails, etc. on separate lines as long as each starts with the field name and a colon.
@@ -63,6 +64,43 @@ Emails won't be rendered if they don't appear to be a valid email address.
 Instagram usernames may include or exclude the preceding @ sign.
 
 You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
+
+## Addresses
+
+Type an address the way you'd write it on an envelope — one line, with commas. No need to break it into separate street/city/state/zip fields.
+
+```
+---
+name: First Last
+address: 123 Main St, Apt 4, Seattle WA 98101
+building: The Pinnacle
+---
+```
+
+`building` is the building or apartment complex name. It's shown above the address and can be toggled off in settings.
+
+If you want to save only the approximate location or a general area, use the `near` + `radius` keys, or `area`.
+
+### Past addresses and approximate places
+
+To record more than one place, such as an archive of previous addresses, use the `addresses` list. Each item is either a plain address string or an object:
+
+```
+---
+name: First Last
+addresses:
+  - 123 Main St, Apt 4, Seattle WA 98101   # current (a bare string)
+  - address: 789 Old Ave, Portland OR 97201
+    until: 2023-08                            # archived — moved out
+  - area: Greenlake, Seattle                  # a named area, not a precise spot
+  - near: Greenlake Park                      # lives near a landmark...
+    radius: 3 blocks                          # ...with this much uncertainty
+---
+```
+
+- An entry is treated as **past/archived** if it has an `until` date or `archived: true`. By default the card shows only current addresses; toggle "Show only current addresses" in settings to show the full history.
+- `area` records a neighborhood/region rather than a precise street address.
+- `near` records a reference point the person lives near, and `radius` records how uncertain that is (free text like `3 blocks`, `0.5 mi`, `500m`).
 
 ## A note on updates
 If you changed any plugin settings before upgrading to 2.0.0, the "Render from properties" option is disabled upon upgrade. This is to avoid a surprising behavior change, where your existing notes with name, email, etc. properties start displaying a contact card when you might not expect it. To opt in, go to Settings → Community plugins → Beautiful Contact Cards and enable "Render from properties".

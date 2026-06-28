@@ -33,6 +33,24 @@ export class ContactCardSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 		new Setting(containerEl)
+			.setName('Show only current addresses')
+			.setDesc('Show only current addresses on the contact card, hiding archived/past ones (those with an end date or marked archived)')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showOnlyCurrentAddresses)
+				.onChange(async (value) => {
+					this.plugin.settings.showOnlyCurrentAddresses = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Show apartment/building complex name')
+			.setDesc('Display the apartment or building complex name alongside an address')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showBuildingName)
+				.onChange(async (value) => {
+					this.plugin.settings.showBuildingName = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
 			.setName('Birthday day format')
 			.setDesc('Display the day without or with a leading zero (when below 10)')
 			.addDropdown(dropdown => dropdown

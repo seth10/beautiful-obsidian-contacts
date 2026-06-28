@@ -1,22 +1,29 @@
-import { Contact, Discord, StringToStringArr } from './types';
+import { Address, Contact, Discord, StringToStringArr } from './types';
+
+// Keys whose value is a single free-text string, so commas inside it must not be split into a list
+// (addresses and birthdays naturally contain commas).
+const NON_LIST_KEYS = ['birthday', 'address', 'building', 'area', 'near', 'radius'];
 
 export function parseStringsToMap(strings: string[]): StringToStringArr {
 	const result: StringToStringArr = {};
 
 	strings.forEach(str => {
-		const [keyPart, valuePart] = str.split(':');
+		// Split on the first colon only, so values may themselves contain colons.
+		const colonIndex = str.indexOf(':');
+		const keyPart = colonIndex === -1 ? undefined : str.slice(0, colonIndex);
+		const valuePart = colonIndex === -1 ? undefined : str.slice(colonIndex + 1);
 
-		if (valuePart !== undefined) {
+		if (valuePart !== undefined && keyPart !== undefined) {
 			const key = keyPart.trim().toLowerCase();
 
 			let valueTrimmed = valuePart.trim();
-			if (valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']')) {
+			if (!NON_LIST_KEYS.includes(key) && valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']')) {
 				// Remove brackets
 				valueTrimmed = valueTrimmed.slice(1, -1);
 			}
 
 			let value;
-			if (key == 'birthday') {
+			if (NON_LIST_KEYS.includes(key)) {
 				value = [valueTrimmed];
 			} else {
 				value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
@@ -41,7 +48,8 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
-		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId)
+		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId),
+		addresses: mapToAddresses(map)
 	};
 
 	if (contact.phone) {
@@ -55,6 +63,28 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 	}
 
 	return contact;
+}
+
+// Build addresses from a code-block map. Code blocks only express current entries (one per
+// address/near/area line); archives and per-entry metadata are frontmatter-only. A `building` line
+// attaches to the address at the same index; a `radius` line attaches to `near` (or `area`).
+function mapToAddresses(map: StringToStringArr): Address[] {
+	const addresses: Address[] = [];
+	const buildingList = map['building'] ?? [];
+	const radiusList = map['radius'] ?? [];
+	const nearList = map['near'] ?? [];
+
+	(map['address'] ?? []).forEach((address, i) => {
+		addresses.push({ address, building: buildingList[i], current: true });
+	});
+	nearList.forEach((near, i) => {
+		addresses.push({ near, radius: radiusList[i], current: true });
+	});
+	(map['area'] ?? []).forEach((area, i) => {
+		addresses.push({ area, radius: nearList.length ? undefined : radiusList[i], current: true });
+	});
+
+	return addresses;
 }
 
 export function stringToDiscordHandleAndChannelId(text: string): Discord {

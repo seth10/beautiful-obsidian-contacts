@@ -13,8 +13,9 @@ A high-level map of the codebase for developers. For what the plugin does and ho
 
 | File | Contents |
 |------|----------|
-| `src/types.ts` | `Contact`, `Discord`, settings interfaces + `DEFAULT_SETTINGS` |
+| `src/types.ts` | `Contact`, `Discord`, `Address`, settings interfaces + `DEFAULT_SETTINGS` |
 | `src/parse.ts` | Code-block parsing + phone/email/birthday/age formatting |
+| `src/address.ts` | Address parsing — hybrid frontmatter (flat keys + `addresses` list of objects/strings) → `Address[]`, precision/current helpers |
 | `src/frontmatter.ts` | Frontmatter → `Contact` conversion (field aliases, normalization) |
 | `src/card.ts` | `buildContactCardEl` — the shared DOM builder for all three render paths |
 | `src/livePreview.ts` | CM6 block widget + StateField extension + refresh effect (the Live Preview path) |
