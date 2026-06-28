@@ -17,15 +17,19 @@ export function parseStringsToMap(strings: string[]): StringToStringArr {
 			const key = keyPart.trim().toLowerCase();
 
 			let valueTrimmed = valuePart.trim();
-			if (!NON_LIST_KEYS.includes(key) && valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']')) {
-				// Remove brackets
-				valueTrimmed = valueTrimmed.slice(1, -1);
-			}
+			const isBracketed = valueTrimmed.startsWith('[') && valueTrimmed.endsWith(']');
 
 			let value;
 			if (NON_LIST_KEYS.includes(key)) {
-				value = [valueTrimmed];
+				// Free-text values keep their commas, so a bare value is one item. A bracketed value is
+				// a list whose items must be quoted (e.g. `["123 Main St, Seattle", "456 South St"]`)
+				// so the item-separating commas can be told apart from commas inside an address.
+				value = isBracketed ? splitQuotedList(valueTrimmed.slice(1, -1)) : [valueTrimmed];
 			} else {
+				if (isBracketed) {
+					// Remove brackets
+					valueTrimmed = valueTrimmed.slice(1, -1);
+				}
 				value = valueTrimmed.split(',').map(item => item.trim()).filter(item => item.length > 0);
 			}
 
@@ -38,6 +42,70 @@ export function parseStringsToMap(strings: string[]): StringToStringArr {
 	});
 
 	return result;
+}
+
+// Separate a `contact` code block into its flat `key: value` lines (parsed line-by-line, so repeated
+// keys like multiple `address:` lines still work) and an optional nested `addresses:` block (handed
+// to a real YAML parser for the list-of-objects form with per-entry until/archived). A code block
+// can use either or both; only the YAML block can express archives.
+export function extractAddressBlock(source: string): { flatRows: string[]; addressesYaml: string | null } {
+	const flat: string[] = [];
+	const block: string[] = [];
+	let inBlock = false;
+
+	for (const line of source.split('\n')) {
+		const indented = /^\s/.test(line);
+		const blank = line.trim().length === 0;
+		// A block sequence item (`- ...`); YAML allows these at the same indent as the parent key,
+		// so they may sit at column 0 with no leading whitespace.
+		const listItem = /^\s*-/.test(line);
+
+		// Once inside the block, keep consuming its list items, indented mapping lines, and blanks.
+		if (inBlock && (indented || blank || listItem)) {
+			block.push(line);
+			continue;
+		}
+		inBlock = false;
+
+		// A top-level `addresses:` line starts the block (inline flow list or a following indented block).
+		if (/^addresses\s*:/i.test(line)) {
+			block.push(line);
+			inBlock = true;
+			continue;
+		}
+		flat.push(line);
+	}
+
+	const flatRows = flat.map(row => row.trim()).filter(row => row.length > 0);
+	return { flatRows, addressesYaml: block.length > 0 ? block.join('\n') : null };
+}
+
+// Split a bracketed free-text list on commas that fall outside quotes, so commas inside a quoted
+// item (e.g. an address) are preserved. Surrounding single/double quotes are stripped from items.
+function splitQuotedList(inner: string): string[] {
+	const items: string[] = [];
+	let current = '';
+	let quote: string | null = null;
+
+	for (const ch of inner) {
+		if (quote) {
+			if (ch === quote) {
+				quote = null;
+			} else {
+				current += ch;
+			}
+		} else if (ch === '"' || ch === '\'') {
+			quote = ch;
+		} else if (ch === ',') {
+			items.push(current.trim());
+			current = '';
+		} else {
+			current += ch;
+		}
+	}
+	items.push(current.trim());
+
+	return items.filter(item => item.length > 0);
 }
 
 export function parseMapToContact(map: StringToStringArr): Contact | null {
@@ -65,9 +133,10 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 	return contact;
 }
 
-// Build addresses from a code-block map. Code blocks only express current entries (one per
-// address/near/area line); archives and per-entry metadata are frontmatter-only. A `building` line
-// attaches to the address at the same index; a `radius` line attaches to `near` (or `area`).
+// Build addresses from the flat lines of a code-block map. These are always current entries (one per
+// address/near/area line); archives and per-entry metadata come from the separate `addresses:` YAML
+// block instead. A `building` line attaches to the address at the same index; a `radius` line
+// attaches to `near` (or `area`).
 function mapToAddresses(map: StringToStringArr): Address[] {
 	const addresses: Address[] = [];
 	const buildingList = map['building'] ?? [];

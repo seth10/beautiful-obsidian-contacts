@@ -101,6 +101,8 @@ addresses:
 - An entry is treated as **past/archived** if it has an `until` date or `archived: true`. By default the card shows only current addresses; toggle "Show only current addresses" in settings to show the full history.
 - `area` records a neighborhood/region rather than a precise street address.
 - `near` records a reference point the person lives near, and `radius` records how uncertain that is (free text like `3 blocks`, `0.5 mi`, `500m`).
+- All this works in a `contact` code block too. You can repeat address fields in code blocks, or use a quoted bracket list (`address: ["123 Main St, Seattle", "456 South St, Portland"]`).
+- Note: Obsidian's Properties panel might flag the `addresses` list with an orange `!` and offer to "Display as multitext". Don't accept, or it will flatten your addresses to "[object Object]" and you will lose data. Edit in source mode if you see this warning. If/when Obsidian adds a property type for a list of objects, this caveat will go away on its own.
 
 ## A note on updates
 If you changed any plugin settings before upgrading to 2.0.0, the "Render from properties" option is disabled upon upgrade. This is to avoid a surprising behavior change, where your existing notes with name, email, etc. properties start displaying a contact card when you might not expect it. To opt in, go to Settings → Community plugins → Beautiful Contact Cards and enable "Render from properties".

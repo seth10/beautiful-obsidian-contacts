@@ -1,9 +1,10 @@
-import { MarkdownPostProcessorContext, MarkdownView, Plugin, TFile } from 'obsidian';
+import { MarkdownPostProcessorContext, MarkdownView, parseYaml, Plugin, TFile } from 'obsidian';
 import { EditorView } from '@codemirror/view';
+import { parseAddresses } from './src/address';
 import { buildContactCardEl } from './src/card';
 import { buildContactCardEditorExtension, contactCardRefreshEffect } from './src/livePreview';
 import { frontmatterToContact, hasContactFields } from './src/frontmatter';
-import { parseMapToContact, parseStringsToMap } from './src/parse';
+import { extractAddressBlock, parseMapToContact, parseStringsToMap } from './src/parse';
 import { ContactCardSettingTab } from './src/settings';
 import { ContactCardPluginSettings, DEFAULT_SETTINGS } from './src/types';
 
@@ -16,10 +17,22 @@ export default class ContactCardPlugin extends Plugin {
 
 		// 1. Existing code-block rendering (kept for backwards compatibility).
 		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, _context: MarkdownPostProcessorContext) => {
-			// Each line of the code block with content
-			const rows = source.split('\n').map(row => row.trim()).filter(row => row.length > 0);
-			const map = parseStringsToMap(rows);
+			// Flat `key: value` lines are parsed line-by-line (repeated keys allowed); a nested
+			// `addresses:` block is parsed as YAML so the list-of-objects form works too.
+			const { flatRows, addressesYaml } = extractAddressBlock(source);
+			const map = parseStringsToMap(flatRows);
 			const contact = parseMapToContact(map);
+
+			if (contact && addressesYaml) {
+				try {
+					const parsed = parseYaml(addressesYaml);
+					if (parsed && typeof parsed === 'object') {
+						contact.addresses = contact.addresses.concat(parseAddresses(parsed as Record<string, unknown>));
+					}
+				} catch {
+					// Malformed YAML in the addresses block — keep the flat parse result.
+				}
+			}
 
 			const card = buildContactCardEl(contact, this.settings);
 			if (card) {
