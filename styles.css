@@ -38,6 +38,12 @@
     margin: var(--size-4-1);
 }
 
+/* The address line paired under a building name (both share one 📍) is indented to sit under the
+   building text rather than under the pin, so the two lines read as one grouped location. */
+.contact-card .contact-address-line {
+    padding-left: 1.6em;
+}
+
 /* Keep link underlines continuous. By default the editor (CodeMirror) uses
    text-decoration-skip-ink: auto, which breaks the underline under the descending tail of the
    "@" in emails; the reading view disables this, so the underline only breaks in editing mode. */

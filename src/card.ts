@@ -7,14 +7,49 @@ function mapsHref(query: string): string {
 	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
+// A precise street address as one query string, from the freeform value or structured components.
+function preciseQuery(addr: Address): string {
+	return addr.address ?? [addr.street, addr.unit, addr.city, addr.region, addr.postal].filter(Boolean).join(', ');
+}
+
 // Render one address as contact-field row(s) on the card.
 function appendAddress(contactCard: HTMLElement, addr: Address, settings: ContactCardPluginSettings): void {
 	const precision = addressPrecision(addr);
+	const showBuilding = !!(settings.showBuildingName && addr.building);
+	const hasPlace = !!(addr.address || addr.street || addr.city || addr.postal || addr.near || addr.area);
 
-	if (precision === 'precise' && settings.showBuildingName && addr.building) {
-		contactCard.createDiv({ cls: 'contact-field', text: '🏢 ' + addr.building });
+	// When archived entries are shown (the "only current" setting is off), label them.
+	const markArchived = (div: HTMLElement) => {
+		if (!addr.current) {
+			div.appendText(addr.until ? ` (until ${addr.until})` : ' (past)');
+		}
+	};
+
+	// A building-only entry with the building-name setting off has nothing to show.
+	if (!hasPlace && !showBuilding) {
+		return;
 	}
 
+	// A building with no address of its own: show it under the building glyph, linked to Maps.
+	if (showBuilding && !hasPlace) {
+		const div = contactCard.createDiv({ cls: 'contact-field', text: '🏢 ' });
+		div.createEl('a', { href: mapsHref(addr.building as string), text: addr.building as string });
+		markArchived(div);
+		return;
+	}
+
+	// A building paired with a precise address: group both under one 📍 on two lines. The building
+	// isn't linked — the address link below points at the same place, so a second link is redundant.
+	if (showBuilding && precision === 'precise') {
+		contactCard.createDiv({ cls: 'contact-field', text: '📍 ' + addr.building });
+		const div = contactCard.createDiv({ cls: 'contact-field contact-address-line' });
+		const query = preciseQuery(addr);
+		div.createEl('a', { href: mapsHref(query), text: addr.address ?? query });
+		markArchived(div);
+		return;
+	}
+
+	// Otherwise a single 📍 line: a precise address, an approximate "near", or a named area.
 	const fieldDiv = contactCard.createDiv({ cls: 'contact-field', text: '📍 ' });
 	let query: string;
 	let linkText: string;
@@ -25,15 +60,11 @@ function appendAddress(contactCard: HTMLElement, addr: Address, settings: Contac
 		query = addr.area as string;
 		linkText = addr.area + ' (area)';
 	} else {
-		query = addr.address ?? [addr.street, addr.unit, addr.city, addr.region, addr.postal].filter(Boolean).join(', ');
+		query = preciseQuery(addr);
 		linkText = addr.address ?? query;
 	}
 	fieldDiv.createEl('a', { href: mapsHref(query), text: linkText });
-
-	// When archived entries are shown (the "only current" setting is off), label them.
-	if (!addr.current) {
-		fieldDiv.appendText(addr.until ? ` (until ${addr.until})` : ' (past)');
-	}
+	markArchived(fieldDiv);
 }
 
 // Build the .contact-card element from a Contact. Shared by the code block, the reading-view

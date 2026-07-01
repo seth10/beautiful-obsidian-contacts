@@ -101,10 +101,10 @@ export function normalizeAddressEntry(raw: unknown): Address | null {
 	return hasLocation(entry) ? entry : null;
 }
 
-// True if an entry names a place in any form (precise, near, or area). Entries with only metadata
-// (e.g. a stray building name) are dropped.
+// True if an entry names a place in any form: a precise address, near, area, or even just a
+// building name (which can render and link on its own). Entries with only dates/labels are dropped.
 function hasLocation(a: Address): boolean {
-	return !!(a.address || a.near || a.area || a.street || a.city || a.postal);
+	return !!(a.address || a.near || a.area || a.street || a.city || a.postal || a.building);
 }
 
 // Classify how precisely an entry locates the person — drives card wording now, the map later.
@@ -147,6 +147,11 @@ export function parseAddresses(fm: Record<string, unknown>): Address[] {
 	}
 	if (flatArea) {
 		entries.push({ area: flatArea, radius: flatNear ? undefined : flatRadius, current: true });
+	}
+	// A flat `building` with no address/near/area of its own still yields a (current) entry, so it
+	// can render and link on its own.
+	if (flatBuilding && typeof rawAddress !== 'string' && !flatNear && !flatArea) {
+		entries.push({ building: flatBuilding, current: true });
 	}
 
 	// 2. The `addresses` list (plus `address`/`location` when given as a list or object) → entries.

@@ -142,9 +142,15 @@ function mapToAddresses(map: StringToStringArr): Address[] {
 	const buildingList = map['building'] ?? [];
 	const radiusList = map['radius'] ?? [];
 	const nearList = map['near'] ?? [];
+	const addressList = map['address'] ?? [];
 
-	(map['address'] ?? []).forEach((address, i) => {
+	addressList.forEach((address, i) => {
 		addresses.push({ address, building: buildingList[i], current: true });
+	});
+	// Buildings with no matching `address:` line become their own (current) entries so a building
+	// can render and link on its own.
+	buildingList.slice(addressList.length).forEach(building => {
+		addresses.push({ building, current: true });
 	});
 	nearList.forEach((near, i) => {
 		addresses.push({ near, radius: radiusList[i], current: true });
