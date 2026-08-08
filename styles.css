@@ -44,6 +44,13 @@
     opacity: 0.7;
 }
 
+/* Friend codes are supplemental to the Nintendo Switch Online name. */
+.contact-card .contact-nso-friend-code {
+    margin-left: 0.4em;
+    opacity: 0.7;
+    font-size: 0.5em;
+}
+
 /* The address line paired under a building name (both share one 📍) is indented to sit under the
    building text rather than under the pin, so the two lines read as one grouped location. */
 .contact-card .contact-address-line {

@@ -15,6 +15,8 @@ email: user@example.com
 insta: username
 beli: username
 beliName: Display Name
+NSO: Nintendo Switch Online name
+NSOfriendCode: SW-1234-5678-9012
 discord: <username|1234567890123456789>
 ---
 
@@ -52,6 +54,8 @@ Some further text in your note.
 - `insta`
 - `beli`
 - `beliName` (pairs by index with `beli`; rendered in parentheses after its Beli username)
+- `NSO` (Nintendo Switch Online name)
+- `NSOfriendCode` (pairs by index with `NSO`; rendered in smaller, reduced-emphasis parentheses)
 - `discord`
 - `address` (see [Addresses](#addresses))
 
@@ -71,6 +75,8 @@ Emails won't be rendered if they don't appear to be a valid email address.
 Instagram usernames may include or exclude the preceding @ sign.
 
 Beli usernames and Beli names may both be lists. Each `beliName` is paired with the `beli` username at the same list index; Beli usernames without a matching name render without parentheses.
+
+Nintendo Switch Online names and friend codes may both be lists. Each `NSOfriendCode` is paired with the `NSO` name at the same list index; names without a matching friend code render without parentheses.
 
 You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
 

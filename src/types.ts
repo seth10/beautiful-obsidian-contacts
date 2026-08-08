@@ -41,6 +41,8 @@ export interface Contact {
 	insta: string[];
 	beli: string[];
 	beliName: string[];
+	NSO: string[];
+	NSOfriendCode: string[];
 	discord: Discord[];
 	addresses: Address[];
 }

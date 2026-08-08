@@ -117,6 +117,13 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 			beliDiv.appendText(` (${beliName})`);
 		}
 	});
+	contact.NSO.forEach((nso, index) => {
+		const nsoDiv = contactCard.createDiv({ cls: 'contact-field', text: '🟥 ' + nso });
+		const friendCode = contact.NSOfriendCode[index];
+		if (friendCode) {
+			nsoDiv.createSpan({ cls: 'contact-nso-friend-code', text: ` (${friendCode})` });
+		}
+	});
 	contact.discord.forEach(discord => {
 		if (discord.dm_channel_id) {
 			const discordDiv = contactCard.createDiv({ cls: 'contact-field', text: '🎮 ' });
