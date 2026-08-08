@@ -39,6 +39,7 @@ export interface Contact {
 	phone: string[];
 	email: string[];
 	insta: string[];
+	beli: string[];
 	discord: Discord[];
 	addresses: Address[];
 }

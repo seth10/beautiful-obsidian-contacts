@@ -13,6 +13,7 @@ birthday: 2000-02-01
 phone: 5551234567
 email: user@example.com
 insta: username
+beli: username
 discord: <username|1234567890123456789>
 ---
 
@@ -48,6 +49,7 @@ Some further text in your note.
 - `phone`
 - `email`
 - `insta`
+- `beli`
 - `discord`
 - `address` (see [Addresses](#addresses))
 

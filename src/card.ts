@@ -109,6 +109,10 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 		const instaDiv = contactCard.createDiv({ cls: 'contact-field', text: '📷 ' });
 		instaDiv.createEl('a', { href: `https://www.instagram.com/${insta}/`, text: '@' + insta });
 	});
+	contact.beli.forEach(beli => {
+		const beliDiv = contactCard.createDiv({ cls: 'contact-field', text: '🍽️ ' });
+		beliDiv.createEl('a', { href: `https://beliapp.co/app/${beli}`, text: beli });
+	});
 	contact.discord.forEach(discord => {
 		if (discord.dm_channel_id) {
 			const discordDiv = contactCard.createDiv({ cls: 'contact-field', text: '🎮 ' });
