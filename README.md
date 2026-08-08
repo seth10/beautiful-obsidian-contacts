@@ -19,7 +19,7 @@ discord: <username|1234567890123456789>
 The rest of your note.
 ```
 
-Any value may also be a YAML list, e.g. `name: [First Last, "The Boss"]` (extra names become nicknames) or `phone: [5551234567, 5559876543]`. The card renders on any note that has at least one recognized field. On those notes the raw Properties panel is hidden by default so the contact card is the only top panel (toggle this in settings).
+Except for the single-value `legalName` field, any value may also be a YAML list, e.g. `name: [First Last, "The Boss"]` (extra names become nicknames) or `phone: [5551234567, 5559876543]`. The card renders on any note that has at least one recognized field. On those notes the raw Properties panel is hidden by default so the contact card is the only top panel (toggle this in settings).
 
 ![An Obsidian window showing a contact card with linked contact info below the note's title. An adjoining screenshot shows the note's frontmatter in source mode.](Screenshots/Contact%20card%20from%20properties,%20source%20mode.png)
 
@@ -43,6 +43,7 @@ Some further text in your note.
 
 ## Supported fields
 - `name`
+- `legalName` (single value; rendered below names)
 - `birthday`
 - `phone`
 - `email`
@@ -54,6 +55,8 @@ Some further text in your note.
 Fields and their values are separated by a colon. Any value may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored. You can also provide additional phone numbers, emails, etc. on separate lines as long as each starts with the field name and a colon.
 
 If you provide multiple names, any subsequent names after the first will be listed as nicknames.
+
+Use `legalName` for one legal name. It is rendered below the display name and nicknames, before the other contact details, at reduced emphasis.
 
 If you provide a [valid birthday](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#date_string), it will be formatted and a calculated age will be displayed. If not, the provided birthday will be displayed as-is. You can set your preferences for how formatted dates are displayed in the "Beautiful Contact Cards" community plugin settings. Birthdays without a year are also supported.
 

@@ -34,8 +34,14 @@
 }
 
 .contact-card .contact-name,
-.contact-card .contact-field {
+.contact-card .contact-field,
+.contact-card .contact-legal-name {
     margin: var(--size-4-1);
+}
+
+/* Keep the legal name legible in both themes while making it secondary to the displayed name. */
+.contact-card .contact-legal-name {
+    opacity: 0.7;
 }
 
 /* The address line paired under a building name (both share one 📍) is indented to sit under the

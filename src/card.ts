@@ -81,6 +81,9 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 	if (contact.nickname.length > 0) {
 		contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}` });
 	}
+	if (contact.legalName) {
+		contactCard.createDiv({ cls: 'contact-legal-name', text: contact.legalName });
+	}
 	if (contact.birthday) {
 		const birthdayString = formatBirthday(
 			contact.birthday,

@@ -2,7 +2,7 @@ import { Address, Contact, Discord, StringToStringArr } from './types';
 
 // Keys whose value is a single free-text string, so commas inside it must not be split into a list
 // (addresses and birthdays naturally contain commas).
-const NON_LIST_KEYS = ['birthday', 'address', 'building', 'area', 'near', 'radius'];
+const NON_LIST_KEYS = ['legalname', 'birthday', 'address', 'building', 'area', 'near', 'radius'];
 
 export function parseStringsToMap(strings: string[]): StringToStringArr {
 	const result: StringToStringArr = {};
@@ -112,6 +112,7 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 	const contact: Contact = {
 		name: (map['name'] ?? [])[0],
 		nickname: (map['name'] ?? []).slice(1),
+		legalName: (map['legalName'] ?? map['legalname'] ?? [])[0],
 		birthday: (map['birthday'] ?? [])[0],
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],

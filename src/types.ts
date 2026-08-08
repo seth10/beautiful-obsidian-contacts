@@ -34,6 +34,7 @@ export interface StringToStringArr {
 export interface Contact {
 	name: string;
 	nickname: string[];
+	legalName: string;
 	birthday: string;
 	phone: string[];
 	email: string[];

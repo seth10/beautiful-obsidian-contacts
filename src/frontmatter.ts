@@ -5,6 +5,7 @@ import { Contact, StringToStringArr } from './types';
 // Canonical contact field -> the frontmatter property aliases that map to it (compared case-insensitively).
 const KNOWN_FIELD_KEYS: { [canonical: string]: string[] } = {
 	name: ['name'],
+	legalName: ['legalname'],
 	birthday: ['birthday'],
 	phone: ['phone'],
 	email: ['email'],
