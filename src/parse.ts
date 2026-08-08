@@ -118,6 +118,7 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
 		beli: map['beli'] ?? [],
+		beliName: map['beliName'] ?? map['beliname'] ?? [],
 		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId),
 		addresses: mapToAddresses(map)
 	};

@@ -14,6 +14,7 @@ phone: 5551234567
 email: user@example.com
 insta: username
 beli: username
+beliName: Display Name
 discord: <username|1234567890123456789>
 ---
 
@@ -50,6 +51,7 @@ Some further text in your note.
 - `email`
 - `insta`
 - `beli`
+- `beliName` (pairs by index with `beli`; rendered in parentheses after its Beli username)
 - `discord`
 - `address` (see [Addresses](#addresses))
 
@@ -67,6 +69,8 @@ Phone numbers may include a country code, but if it's excluded then +1 will be a
 Emails won't be rendered if they don't appear to be a valid email address.
 
 Instagram usernames may include or exclude the preceding @ sign.
+
+Beli usernames and Beli names may both be lists. Each `beliName` is paired with the `beli` username at the same list index; Beli usernames without a matching name render without parentheses.
 
 You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
 

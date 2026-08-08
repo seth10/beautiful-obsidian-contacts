@@ -40,6 +40,7 @@ export interface Contact {
 	email: string[];
 	insta: string[];
 	beli: string[];
+	beliName: string[];
 	discord: Discord[];
 	addresses: Address[];
 }

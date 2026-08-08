@@ -11,6 +11,7 @@ const KNOWN_FIELD_KEYS: { [canonical: string]: string[] } = {
 	email: ['email'],
 	insta: ['insta', 'instagram'],
 	beli: ['beli'],
+	beliName: ['beliname'],
 	discord: ['discord']
 };
 
