@@ -19,7 +19,7 @@ discord: <username|1234567890123456789>
 The rest of your note.
 ```
 
-Except for the single-value `legalName` field, any value may also be a YAML list, e.g. `name: [First Last, "The Boss"]` (extra names become nicknames) or `phone: [5551234567, 5559876543]`. The card renders on any note that has at least one recognized field. On those notes the raw Properties panel is hidden by default so the contact card is the only top panel (toggle this in settings).
+Except for the single-value `legalName` field, any value may also be a YAML list, e.g. `name: [First Last, "The Boss"]` (extra names show up under their primary name) or `phone: [5551234567, 5559876543]`. The card renders on any note that has at least one recognized field. On those notes the raw Properties panel is hidden by default so the contact card is the only top panel (toggle this in settings).
 
 ![An Obsidian window showing a contact card with linked contact info below the note's title. An adjoining screenshot shows the note's frontmatter in source mode.](Screenshots/Contact%20card%20from%20properties,%20source%20mode.png)
 

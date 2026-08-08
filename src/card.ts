@@ -79,7 +79,7 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 		contactCard.createDiv({ cls: 'contact-name', text: contact.name });
 	}
 	if (contact.nickname.length > 0) {
-		contactCard.createDiv({ cls: 'contact-field', text: `Nickname${contact.nickname.length > 1 ? 's' : ''}: ${contact.nickname.join(', ')}` });
+		contactCard.createDiv({ cls: 'contact-field', text: `${contact.nickname.join(', ')}` });
 	}
 	if (contact.legalName) {
 		contactCard.createDiv({ cls: 'contact-legal-name', text: contact.legalName });
