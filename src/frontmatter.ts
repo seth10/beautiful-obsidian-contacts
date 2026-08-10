@@ -10,6 +10,7 @@ const KNOWN_FIELD_KEYS: { [canonical: string]: string[] } = {
 	phone: ['phone'],
 	email: ['email'],
 	insta: ['insta', 'instagram'],
+	steam: ['steam'],
 	beli: ['beli'],
 	beliName: ['beliname'],
 	NSO: ['nso'],

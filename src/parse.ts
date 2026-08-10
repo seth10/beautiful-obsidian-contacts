@@ -117,6 +117,7 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 		phone: map['phone'] ?? [],
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
+		steam: map['steam'] ?? [],
 		beli: map['beli'] ?? [],
 		beliName: map['beliName'] ?? map['beliname'] ?? [],
 		NSO: map['NSO'] ?? map['nso'] ?? [],

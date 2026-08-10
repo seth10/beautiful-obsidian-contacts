@@ -7,6 +7,18 @@ function mapsHref(query: string): string {
 	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
+// Steam profile URLs use /id/ for a custom profile name and /profiles/ for a numeric SteamID64.
+// Accept either bare identifier so contact properties remain concise, or a pasted Steam Community URL.
+function steamProfileHref(steam: string): string {
+	const pastedProfile = steam.match(/^(?:https?:\/\/)?(?:www\.)?steamcommunity\.com\/(id|profiles)\/([^/?#]+)\/?(?:[?#].*)?$/i);
+	if (pastedProfile) {
+		return `https://steamcommunity.com/${pastedProfile[1].toLowerCase()}/${pastedProfile[2]}/`;
+	}
+	return /^\d+$/.test(steam)
+		? `https://steamcommunity.com/profiles/${steam}/`
+		: `https://steamcommunity.com/id/${encodeURIComponent(steam)}/`;
+}
+
 // A precise street address as one query string, from the freeform value or structured components.
 function preciseQuery(addr: Address): string {
 	return addr.address ?? [addr.street, addr.unit, addr.city, addr.region, addr.postal].filter(Boolean).join(', ');
@@ -108,6 +120,10 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 	contact.insta.forEach(insta => {
 		const instaDiv = contactCard.createDiv({ cls: 'contact-field', text: '📷 ' });
 		instaDiv.createEl('a', { href: `https://www.instagram.com/${insta}/`, text: '@' + insta });
+	});
+	contact.steam.forEach(steam => {
+		const steamDiv = contactCard.createDiv({ cls: 'contact-field', text: '👾 ' });
+		steamDiv.createEl('a', { href: steamProfileHref(steam), text: steam });
 	});
 	contact.beli.forEach((beli, index) => {
 		const beliDiv = contactCard.createDiv({ cls: 'contact-field', text: '🍽️ ' });

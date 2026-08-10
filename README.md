@@ -13,6 +13,7 @@ birthday: 2000-02-01
 phone: 5551234567
 email: user@example.com
 insta: username
+steam: username
 beli: username
 beliName: Display Name
 NSO: Nintendo Switch Online name
@@ -52,6 +53,7 @@ Some further text in your note.
 - `phone`
 - `email`
 - `insta`
+- `steam`
 - `beli`
 - `beliName` (pairs by index with `beli`; rendered in parentheses after its Beli username)
 - `NSO` (Nintendo Switch Online name)
@@ -73,6 +75,8 @@ Phone numbers may include a country code, but if it's excluded then +1 will be a
 Emails won't be rendered if they don't appear to be a valid email address.
 
 Instagram usernames may include or exclude the preceding @ sign.
+
+Steam values are linked to their Steam Community profile. Use a custom profile name (for example, `steam: username`), a numeric SteamID64, or a full Steam Community profile URL. Custom names use Steam's `/id/` URL form; numeric IDs use its permanent `/profiles/` URL form.
 
 Beli usernames and Beli names may both be lists. Each `beliName` is paired with the `beli` username at the same list index; Beli usernames without a matching name render without parentheses.
 

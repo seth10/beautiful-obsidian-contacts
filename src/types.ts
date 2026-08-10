@@ -39,6 +39,7 @@ export interface Contact {
 	phone: string[];
 	email: string[];
 	insta: string[];
+	steam: string[];
 	beli: string[];
 	beliName: string[];
 	NSO: string[];
