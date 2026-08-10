@@ -1,4 +1,5 @@
 import { hasAddresses, parseAddresses } from './address';
+import { currentEmploymentFromFrontmatter, hasEmploymentHistory, parseEmploymentHistory } from './employment';
 import { parseMapToContact } from './parse';
 import { Contact, StringToStringArr } from './types';
 
@@ -15,7 +16,12 @@ const KNOWN_FIELD_KEYS: { [canonical: string]: string[] } = {
 	beliName: ['beliname'],
 	NSO: ['nso'],
 	NSOfriendCode: ['nsofriendcode'],
-	discord: ['discord']
+	discord: ['discord'],
+	employer: ['employer'],
+	title: ['title'],
+	department: ['department'],
+	manager: ['manager'],
+	employmentStarted: ['employmentstart', 'employmentstarted']
 };
 
 // Normalize any frontmatter value (scalar / list / Date / number) into a trimmed string array.
@@ -67,13 +73,14 @@ export function hasContactFields(fm: Record<string, unknown> | null | undefined)
 	if (!fm) {
 		return false;
 	}
-	return Object.keys(frontmatterToMap(fm)).length > 0 || hasAddresses(fm);
+	return Object.keys(frontmatterToMap(fm)).length > 0 || hasAddresses(fm) || hasEmploymentHistory(fm);
 }
 
 export function frontmatterToContact(fm: Record<string, unknown>): Contact | null {
 	const map = frontmatterToMap(fm);
 	const addresses = parseAddresses(fm);
-	if (Object.keys(map).length === 0 && addresses.length === 0) {
+	const employmentHistory = parseEmploymentHistory(fm);
+	if (Object.keys(map).length === 0 && addresses.length === 0 && employmentHistory.length === 0) {
 		return null;
 	}
 	const contact = parseMapToContact(map);
@@ -81,5 +88,7 @@ export function frontmatterToContact(fm: Record<string, unknown>): Contact | nul
 		return null;
 	}
 	contact.addresses = addresses;
+	contact.currentEmployment = currentEmploymentFromFrontmatter(fm);
+	contact.employmentHistory = employmentHistory;
 	return contact;
 }

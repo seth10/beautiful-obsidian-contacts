@@ -1,8 +1,9 @@
 import { Address, Contact, Discord, StringToStringArr } from './types';
+import { currentEmploymentFromMap } from './employment';
 
 // Keys whose value is a single free-text string, so commas inside it must not be split into a list
 // (addresses and birthdays naturally contain commas).
-const NON_LIST_KEYS = ['legalname', 'birthday', 'address', 'building', 'area', 'near', 'radius'];
+const NON_LIST_KEYS = ['legalname', 'birthday', 'address', 'building', 'area', 'near', 'radius', 'employer', 'title', 'department', 'manager', 'employmentstart', 'employmentstarted'];
 
 export function parseStringsToMap(strings: string[]): StringToStringArr {
 	const result: StringToStringArr = {};
@@ -48,10 +49,11 @@ export function parseStringsToMap(strings: string[]): StringToStringArr {
 // keys like multiple `address:` lines still work) and an optional nested `addresses:` block (handed
 // to a real YAML parser for the list-of-objects form with per-entry until/archived). A code block
 // can use either or both; only the YAML block can express archives.
-export function extractAddressBlock(source: string): { flatRows: string[]; addressesYaml: string | null } {
+export function extractAddressBlock(source: string): { flatRows: string[]; addressesYaml: string | null; employmentHistoryYaml: string | null } {
 	const flat: string[] = [];
-	const block: string[] = [];
-	let inBlock = false;
+	const addressesBlock: string[] = [];
+	const employmentHistoryBlock: string[] = [];
+	let block: string[] | null = null;
 
 	for (const line of source.split('\n')) {
 		const indented = /^\s/.test(line);
@@ -61,23 +63,32 @@ export function extractAddressBlock(source: string): { flatRows: string[]; addre
 		const listItem = /^\s*-/.test(line);
 
 		// Once inside the block, keep consuming its list items, indented mapping lines, and blanks.
-		if (inBlock && (indented || blank || listItem)) {
+		if (block && (indented || blank || listItem)) {
 			block.push(line);
 			continue;
 		}
-		inBlock = false;
+		block = null;
 
 		// A top-level `addresses:` line starts the block (inline flow list or a following indented block).
 		if (/^addresses\s*:/i.test(line)) {
-			block.push(line);
-			inBlock = true;
+			addressesBlock.push(line);
+			block = addressesBlock;
+			continue;
+		}
+		if (/^employmentHistory\s*:/i.test(line)) {
+			employmentHistoryBlock.push(line);
+			block = employmentHistoryBlock;
 			continue;
 		}
 		flat.push(line);
 	}
 
 	const flatRows = flat.map(row => row.trim()).filter(row => row.length > 0);
-	return { flatRows, addressesYaml: block.length > 0 ? block.join('\n') : null };
+	return {
+		flatRows,
+		addressesYaml: addressesBlock.length > 0 ? addressesBlock.join('\n') : null,
+		employmentHistoryYaml: employmentHistoryBlock.length > 0 ? employmentHistoryBlock.join('\n') : null
+	};
 }
 
 // Split a bracketed free-text list on commas that fall outside quotes, so commas inside a quoted
@@ -123,7 +134,9 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 		NSO: map['NSO'] ?? map['nso'] ?? [],
 		NSOfriendCode: map['NSOfriendCode'] ?? map['nsofriendcode'] ?? [],
 		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId),
-		addresses: mapToAddresses(map)
+		addresses: mapToAddresses(map),
+		currentEmployment: currentEmploymentFromMap(map),
+		employmentHistory: []
 	};
 
 	if (contact.phone) {

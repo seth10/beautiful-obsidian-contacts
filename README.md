@@ -60,6 +60,7 @@ Some further text in your note.
 - `NSOfriendCode` (pairs by index with `NSO`; rendered in smaller, reduced-emphasis parentheses)
 - `discord`
 - `address` (see [Addresses](#addresses))
+- `employer`, `title`, `department`, `manager`, `employmentStarted` (see [Employment](#employment))
 
 ## Formatting details
 Fields and their values are separated by a colon. Any value may be a list, denoted by one or more commas. Brackets are optional. Extra commas or whitespace will be ignored. You can also provide additional phone numbers, emails, etc. on separate lines as long as each starts with the field name and a colon.
@@ -83,6 +84,44 @@ Beli usernames and Beli names may both be lists. Each `beliName` is paired with 
 Nintendo Switch Online names and friend codes may both be lists. Each `NSOfriendCode` is paired with the `NSO` name at the same list index; names without a matching friend code render without parentheses.
 
 You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
+
+## Employment
+
+Use the following top-level properties for a contact's current role:
+
+```
+---
+employer: "[[Acme Corp]]"
+title: Senior Engineer
+department: Platform
+manager: "[[Jordan Lee]]"
+employmentStart: June 2024
+---
+```
+
+Employers and managers can be normal text or Obsidian links. Linked values are clickable on the card. `employmentStart` (and the existing `employmentStarted` alias) accepts `YYYY-MM`, `YYYY-MM-DD`, or a full or abbreviated English month and year such as `June 2026` or `Jun 2026`; the card shows the start date and elapsed years/months.
+
+Record former roles in an `employmentHistory` list. Each entry requires an `employer`; `title`, `department`, and `manager` are optional. Use `started` or `employmentStarted` for the start date and `ended` or `employmentEnded` for the end date. Employment dates accept the same formats as `employmentStart`. The card keeps this history collapsed until you expand it.
+
+```
+---
+employmentHistory:
+  - employer: "[[Old Co]]"
+    title: Engineer
+    department: Infrastructure
+    manager: "[[Casey Morgan]]"
+    started: 2021-06
+    ended: 2024-02
+---
+```
+
+The same current fields and `employmentHistory:` YAML block work in a `contact` code block. Employment history is directly queryable in [Obsidian Bases](https://obsidian.md/help/bases). For example, use this advanced filter to find people who currently work for, or previously worked for, Acme:
+
+```
+employer == link("Acme Corp") || (employmentHistory && employmentHistory.filter(value.employer == link("Acme Corp")).length > 0)
+```
+
+Replace `employer` with `manager` and `value.employer` with `value.manager` to query current or former reporting relationships. If the Base is embedded in an employer's note, compare against `this.file` instead of `link("Acme Corp")`.
 
 ## Addresses
 

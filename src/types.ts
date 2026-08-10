@@ -46,11 +46,22 @@ export interface Contact {
 	NSOfriendCode: string[];
 	discord: Discord[];
 	addresses: Address[];
+	currentEmployment: Employment | null;
+	employmentHistory: Employment[];
 }
 
 export interface Discord {
 	handle: string;
 	dm_channel_id?: string;
+}
+
+export interface Employment {
+	employer: string;
+	title?: string;
+	department?: string;
+	manager?: string;
+	started?: string;
+	ended?: string;
 }
 
 export type AddressPrecision = 'precise' | 'area' | 'approximate';

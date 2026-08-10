@@ -1,6 +1,7 @@
 import { MarkdownPostProcessorContext, MarkdownView, parseYaml, Plugin, TFile } from 'obsidian';
 import { EditorView } from '@codemirror/view';
 import { parseAddresses } from './src/address';
+import { parseEmploymentHistory } from './src/employment';
 import { buildContactCardEl } from './src/card';
 import { buildContactCardEditorExtension, contactCardRefreshEffect } from './src/livePreview';
 import { frontmatterToContact, hasContactFields } from './src/frontmatter';
@@ -16,10 +17,10 @@ export default class ContactCardPlugin extends Plugin {
 		this.addSettingTab(new ContactCardSettingTab(this.app, this));
 
 		// 1. Existing code-block rendering (kept for backwards compatibility).
-		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, _context: MarkdownPostProcessorContext) => {
+		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
 			// Flat `key: value` lines are parsed line-by-line (repeated keys allowed); a nested
 			// `addresses:` block is parsed as YAML so the list-of-objects form works too.
-			const { flatRows, addressesYaml } = extractAddressBlock(source);
+			const { flatRows, addressesYaml, employmentHistoryYaml } = extractAddressBlock(source);
 			const map = parseStringsToMap(flatRows);
 			const contact = parseMapToContact(map);
 
@@ -33,8 +34,18 @@ export default class ContactCardPlugin extends Plugin {
 					// Malformed YAML in the addresses block — keep the flat parse result.
 				}
 			}
+			if (contact && employmentHistoryYaml) {
+				try {
+					const parsed = parseYaml(employmentHistoryYaml);
+					if (parsed && typeof parsed === 'object') {
+						contact.employmentHistory = parseEmploymentHistory(parsed as Record<string, unknown>);
+					}
+				} catch {
+					// Malformed YAML in the employmentHistory block — keep the flat parse result.
+				}
+			}
 
-			const card = buildContactCardEl(contact, this.settings);
+			const card = buildContactCardEl(contact, this.settings, { app: this.app, sourcePath: context.sourcePath });
 			if (card) {
 				element.appendChild(card);
 			}
@@ -48,7 +59,7 @@ export default class ContactCardPlugin extends Plugin {
 			const fm = ctx.frontmatter ?? this.getFrontmatterForPath(ctx.sourcePath);
 			const sizer = el.closest('.markdown-preview-sizer');
 			if (sizer) {
-				this.upsertReadingCard(sizer, fm);
+				this.upsertReadingCard(sizer, fm, ctx.sourcePath);
 			}
 		});
 
@@ -91,7 +102,7 @@ export default class ContactCardPlugin extends Plugin {
 
 			// Reading-view card: covers frontmatter-only notes the post-processor never fires for.
 			view.containerEl.querySelectorAll('.markdown-reading-view .markdown-preview-sizer').forEach(sizer => {
-				this.upsertReadingCard(sizer, fm);
+				this.upsertReadingCard(sizer, fm, file?.path);
 			});
 
 			// Force the Live Preview StateField widget to rebuild from current frontmatter.
@@ -103,7 +114,7 @@ export default class ContactCardPlugin extends Plugin {
 
 	// Insert/update/remove the frontmatter contact card as the first child of a reading-view sizer.
 	// A signature stored on the element avoids rebuilding (and flickering) when nothing changed.
-	upsertReadingCard(sizer: Element, fm: Record<string, unknown> | null | undefined) {
+	upsertReadingCard(sizer: Element, fm: Record<string, unknown> | null | undefined, sourcePath?: string) {
 		const existing = sizer.querySelector(':scope > .contact-card') as HTMLElement | null;
 		const contact = (this.settings.renderFromProperties && hasContactFields(fm))
 			? frontmatterToContact(fm as Record<string, unknown>)
@@ -119,7 +130,7 @@ export default class ContactCardPlugin extends Plugin {
 			return;
 		}
 
-		const card = buildContactCardEl(contact, this.settings);
+		const card = buildContactCardEl(contact, this.settings, { app: this.app, sourcePath });
 		if (!card) {
 			existing?.remove();
 			return;

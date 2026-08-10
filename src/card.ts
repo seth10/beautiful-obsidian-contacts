@@ -1,6 +1,13 @@
+import { App } from 'obsidian';
 import { addressPrecision } from './address';
+import { employmentDuration, formatEmploymentDate } from './employment';
 import { calculateAge, formatBirthday } from './parse';
-import { Address, Contact, ContactCardPluginSettings } from './types';
+import { Address, Contact, ContactCardPluginSettings, Employment } from './types';
+
+export interface CardContext {
+	app: App;
+	sourcePath?: string;
+}
 
 // A Google Maps search URL for a free-text place — used as the address link target.
 function mapsHref(query: string): string {
@@ -79,9 +86,48 @@ function appendAddress(contactCard: HTMLElement, addr: Address, settings: Contac
 	markArchived(fieldDiv);
 }
 
+// Render `[[target|label]]` values as working internal links. Text remains usable when a user has
+// not created a separate company or manager note.
+function appendLinkedText(parent: HTMLElement, value: string, context?: CardContext): void {
+	const match = value.match(/^\[\[([^|\]]+)(?:\|([^\]]+))?\]\]$/);
+	if (!match || !context) {
+		parent.appendText(value);
+		return;
+	}
+	const target = match[1];
+	const label = match[2] || target.replace(/#.*/, '');
+	const link = parent.createEl('a', { cls: 'internal-link', text: label, href: target });
+	link.dataset.href = target;
+	link.addEventListener('click', event => {
+		event.preventDefault();
+		context.app.workspace.openLinkText(target, context.sourcePath ?? '', event.ctrlKey || event.metaKey);
+	});
+}
+
+function appendEmployment(parent: HTMLElement, employment: Employment, context: CardContext | undefined, former: boolean): void {
+	const employer = parent.createDiv({ cls: 'contact-field', text: '💼 ' });
+	appendLinkedText(employer, employment.employer, context);
+	if (employment.title || employment.department) {
+		parent.createDiv({ cls: 'contact-field contact-employment-detail', text: [employment.title, employment.department].filter(Boolean).join(' · ') });
+	}
+	if (employment.manager) {
+		const manager = parent.createDiv({ cls: 'contact-field contact-employment-detail', text: 'Reports to ' });
+		appendLinkedText(manager, employment.manager, context);
+	}
+	const start = formatEmploymentDate(employment.started);
+	const end = formatEmploymentDate(employment.ended);
+	const duration = former
+		? (employment.ended ? employmentDuration(employment.started, employment.ended) : null)
+		: employmentDuration(employment.started);
+	if (start || end) {
+		const prefix = former ? [start, end].filter(Boolean).join(' – ') : (start ? `Since ${start}` : '');
+		parent.createDiv({ cls: 'contact-field contact-employment-detail', text: [prefix, duration].filter(Boolean).join(' · ') });
+	}
+}
+
 // Build the .contact-card element from a Contact. Shared by the code block, the reading-view
 // post-processor, and the Live Preview editor widget. Returns null when there is nothing to show.
-export function buildContactCardEl(contact: Contact | null, settings: ContactCardPluginSettings): HTMLElement | null {
+export function buildContactCardEl(contact: Contact | null, settings: ContactCardPluginSettings, context?: CardContext): HTMLElement | null {
 	if (!contact) {
 		return null;
 	}
@@ -106,6 +152,14 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 		const age = calculateAge(contact.birthday);
 		const ageString = age ? ` (${age} years old)` : '';
 		contactCard.createDiv({ cls: 'contact-field', text: `Birthday: ${birthdayString}${ageString}` });
+	}
+	if (contact.currentEmployment) {
+		appendEmployment(contactCard, contact.currentEmployment, context, false);
+	}
+	if (contact.employmentHistory.length > 0) {
+		const history = contactCard.createEl('details', { cls: 'contact-employment-history' });
+		history.createEl('summary', { text: `Employment history (${contact.employmentHistory.length})` });
+		contact.employmentHistory.forEach(employment => appendEmployment(history, employment, context, true));
 	}
 	contact.phone.forEach(phone => {
 		const phoneDiv = contactCard.createDiv({ cls: 'contact-field', text: '📞 ' });

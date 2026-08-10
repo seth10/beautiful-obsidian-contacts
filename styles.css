@@ -57,6 +57,14 @@
     padding-left: 1.6em;
 }
 
+.contact-card .contact-employment-history {
+    margin: var(--size-4-1);
+}
+
+.contact-card .contact-employment-detail {
+    padding-left: 1.6em;
+}
+
 /* Keep link underlines continuous. By default the editor (CodeMirror) uses
    text-decoration-skip-ink: auto, which breaks the underline under the descending tail of the
    "@" in emails; the reading view disables this, so the underline only breaks in editing mode. */

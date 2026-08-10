@@ -11,7 +11,7 @@ import type ContactCardPlugin from '../main';
 export const contactCardRefreshEffect = StateEffect.define<null>();
 
 class ContactCardWidget extends WidgetType {
-	constructor(private contact: Contact, private settings: ContactCardPluginSettings) {
+	constructor(private contact: Contact, private settings: ContactCardPluginSettings, private plugin: ContactCardPlugin, private sourcePath: string) {
 		super();
 	}
 
@@ -21,7 +21,7 @@ class ContactCardWidget extends WidgetType {
 	}
 
 	toDOM(): HTMLElement {
-		const el = buildContactCardEl(this.contact, this.settings) ?? createDiv();
+		const el = buildContactCardEl(this.contact, this.settings, { app: this.plugin.app, sourcePath: this.sourcePath }) ?? createDiv();
 		// Marker so only the Live Preview frontmatter widget gets top spacing (see styles.css),
 		// without affecting code-block cards that also render inside the editor.
 		el.addClass('contact-card-frontmatter');
@@ -50,7 +50,7 @@ export function buildContactCardEditorExtension(plugin: ContactCardPlugin): Stat
 				const contact = frontmatterToContact(fm as Record<string, unknown>);
 				if (contact) {
 					builder.add(0, 0, Decoration.widget({
-						widget: new ContactCardWidget(contact, plugin.settings),
+						widget: new ContactCardWidget(contact, plugin.settings, plugin, file.path),
 						block: true,
 						side: -1
 					}));
