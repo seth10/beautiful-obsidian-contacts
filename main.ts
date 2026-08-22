@@ -1,16 +1,16 @@
-import { MarkdownPostProcessorContext, MarkdownView, parseYaml, Plugin, TFile } from 'obsidian';
+import { MarkdownPostProcessorContext, MarkdownView, Plugin, TFile } from 'obsidian';
 import { EditorView } from '@codemirror/view';
-import { parseAddresses } from './src/address';
-import { parseEmploymentHistory } from './src/employment';
+import { BocAddressApi, createBocAddressApi, parseContactBlock } from './src/api';
 import { buildContactCardEl } from './src/card';
 import { buildContactCardEditorExtension, contactCardRefreshEffect } from './src/livePreview';
 import { frontmatterToContact, hasContactFields } from './src/frontmatter';
-import { extractAddressBlock, parseMapToContact, parseStringsToMap } from './src/parse';
 import { ContactCardSettingTab } from './src/settings';
 import { ContactCardPluginSettings, DEFAULT_SETTINGS } from './src/types';
 
 export default class ContactCardPlugin extends Plugin {
 	settings: ContactCardPluginSettings;
+	// Public address-parsing API for companion plugins (e.g. beautiful-contact-cards-map). See src/api.ts.
+	api: BocAddressApi = createBocAddressApi();
 
 	async onload() {
 		await this.loadSettings();
@@ -18,33 +18,7 @@ export default class ContactCardPlugin extends Plugin {
 
 		// 1. Existing code-block rendering (kept for backwards compatibility).
 		this.registerMarkdownCodeBlockProcessor('contact', (source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
-			// Flat `key: value` lines are parsed line-by-line (repeated keys allowed); a nested
-			// `addresses:` block is parsed as YAML so the list-of-objects form works too.
-			const { flatRows, addressesYaml, employmentHistoryYaml } = extractAddressBlock(source);
-			const map = parseStringsToMap(flatRows);
-			const contact = parseMapToContact(map);
-
-			if (contact && addressesYaml) {
-				try {
-					const parsed = parseYaml(addressesYaml);
-					if (parsed && typeof parsed === 'object') {
-						contact.addresses = contact.addresses.concat(parseAddresses(parsed as Record<string, unknown>));
-					}
-				} catch {
-					// Malformed YAML in the addresses block — keep the flat parse result.
-				}
-			}
-			if (contact && employmentHistoryYaml) {
-				try {
-					const parsed = parseYaml(employmentHistoryYaml);
-					if (parsed && typeof parsed === 'object') {
-						contact.employmentHistory = parseEmploymentHistory(parsed as Record<string, unknown>);
-					}
-				} catch {
-					// Malformed YAML in the employmentHistory block — keep the flat parse result.
-				}
-			}
-
+			const contact = parseContactBlock(source);
 			const card = buildContactCardEl(contact, this.settings, { app: this.app, sourcePath: context.sourcePath });
 			if (card) {
 				element.appendChild(card);
