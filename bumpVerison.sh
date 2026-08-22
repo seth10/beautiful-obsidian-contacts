@@ -22,4 +22,9 @@ npm version "$target_version" \
 # Keep the Obsidian manifest and compatibility map in sync.
 node version-bump.mjs "$target_version"
 
-echo "Bumped version to $target_version"
+version_files=(package.json package-lock.json manifest.json versions.json)
+
+git add -- "${version_files[@]}"
+git commit -S -m "$target_version" -- "${version_files[@]}"
+
+echo "Bumped version to $target_version and created a signed Git commit"
