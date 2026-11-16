@@ -1,4 +1,4 @@
-import { Address, Contact, Discord, StringToStringArr } from './types';
+import { Address, BeliAccount, Contact, Discord, NintendoSwitchOnlineAccount, StringToStringArr } from './types';
 import { currentEmploymentFromMap } from './employment';
 
 // Keys whose value is a single free-text string, so commas inside it must not be split into a list
@@ -129,11 +129,9 @@ export function parseMapToContact(map: StringToStringArr): Contact | null {
 		email: map['email'] ?? [],
 		insta: map['insta'] ?? [],
 		steam: map['steam'] ?? [],
-		beli: map['beli'] ?? [],
-		beliName: map['beliName'] ?? map['beliname'] ?? [],
-		NSO: map['NSO'] ?? map['nso'] ?? [],
-		NSOfriendCode: map['NSOfriendCode'] ?? map['nsofriendcode'] ?? [],
-		discord: (map['discord'] ?? []).map(stringToDiscordHandleAndChannelId),
+		beli: (map['beli'] ?? []).map(stringToBeliAccount),
+		NSO: (map['NSO'] ?? map['nso'] ?? []).map(stringToNintendoSwitchOnlineAccount),
+		discord: (map['discord'] ?? []).map(stringToDiscordAccount),
 		addresses: mapToAddresses(map),
 		currentEmployment: currentEmploymentFromMap(map),
 		employmentHistory: []
@@ -181,26 +179,34 @@ function mapToAddresses(map: StringToStringArr): Address[] {
 	return addresses;
 }
 
-export function stringToDiscordHandleAndChannelId(text: string): Discord {
-	const cleanedText = (text.startsWith('<') && text.endsWith('>'))
-		? text.slice(1, -1)
-		: text;
-	if (cleanedText.contains('|')) {
-		const [handle, dm_channel_id] = cleanedText.split('|');
-		if (isNaN(Number(dm_channel_id))) {
-			return {
-				handle: handle
-			};
-		}
-		return {
-			handle: handle,
-			dm_channel_id: dm_channel_id
-		};
-	} else {
-		return {
-			handle: cleanedText
-		};
+// Account fields use one atomic `primary|secondary` value. Splitting only on the first pipe keeps
+// the associated metadata attached to its account when a field contains multiple list items.
+function splitAccountValue(text: string): [string, string | undefined] {
+	const separator = text.indexOf('|');
+	if (separator === -1) {
+		return [text.trim(), undefined];
 	}
+	const primary = text.slice(0, separator).trim();
+	const secondary = text.slice(separator + 1).trim();
+	return [primary, secondary || undefined];
+}
+
+export function stringToBeliAccount(text: string): BeliAccount {
+	const [username, displayName] = splitAccountValue(text);
+	return { username, displayName };
+}
+
+export function stringToNintendoSwitchOnlineAccount(text: string): NintendoSwitchOnlineAccount {
+	const [displayName, friendCode] = splitAccountValue(text);
+	return { displayName, friendCode };
+}
+
+export function stringToDiscordAccount(text: string): Discord {
+	const [username, candidateDmChannelId] = splitAccountValue(text);
+	const dmChannelId = candidateDmChannelId && /^\d+$/.test(candidateDmChannelId)
+		? candidateDmChannelId
+		: undefined;
+	return { username, dmChannelId };
 }
 
 export function formatPhoneNumber(phone: string): string {

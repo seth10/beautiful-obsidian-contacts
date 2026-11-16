@@ -14,11 +14,9 @@ phone: 5551234567
 email: user@example.com
 insta: username
 steam: username
-beli: username
-beliName: Display Name
-NSO: Nintendo Switch Online name
-NSOfriendCode: SW-1234-5678-9012
-discord: <username|1234567890123456789>
+beli: username|Display Name
+NSO: Nintendo Switch Online name|SW-1234-5678-9012
+discord: username|1234567890123456789
 ---
 
 The rest of your note.
@@ -54,11 +52,9 @@ Some further text in your note.
 - `email`
 - `insta`
 - `steam`
-- `beli`
-- `beliName` (pairs by index with `beli`; rendered in parentheses after its Beli username)
-- `NSO` (Nintendo Switch Online name)
-- `NSOfriendCode` (pairs by index with `NSO`; rendered in smaller, reduced-emphasis parentheses)
-- `discord`
+- `beli` (username, optionally followed by `|display name`)
+- `NSO` (Nintendo Switch Online name, optionally followed by `|friend code`)
+- `discord` (username, optionally followed by `|DM channel ID`)
 - `address` (see [Addresses](#addresses))
 - `employer`, `title`, `department`, `manager`, `employmentStarted` (see [Employment](#employment))
 
@@ -79,11 +75,9 @@ Instagram usernames may include or exclude the preceding @ sign.
 
 Steam values are linked to their Steam Community profile. Use a custom profile name (for example, `steam: username`), a numeric SteamID64, or a full Steam Community profile URL. Custom names use Steam's `/id/` URL form; numeric IDs use its permanent `/profiles/` URL form.
 
-Beli usernames and Beli names may both be lists. Each `beliName` is paired with the `beli` username at the same list index; Beli usernames without a matching name render without parentheses.
+Beli, Nintendo Switch Online, and Discord use the same format: the account's primary name followed by optional associated information after a pipe (`|`). Use `beli: username|Display Name`, `NSO: Display Name|SW-1234-5678-9012`, and `discord: username|1234567890123456789`. A primary name without a pipe is also valid. For multiple accounts, make each complete pair a separate list item so its associated information stays attached to the correct account.
 
-Nintendo Switch Online names and friend codes may both be lists. Each `NSOfriendCode` is paired with the `NSO` name at the same list index; names without a matching friend code render without parentheses.
-
-You may provide Discord username(s); or, if you would like a convenient link directly to your DM with that user (works on Desktop and Mobile), you can further provide that channel ID after a pipe symbol. Angle brackets surrounding this pair are optional. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether you want links to open in your native client or a browser.
+For Discord, the value after the pipe is the DM channel ID, which makes the username a convenient link directly to your DM with that user on desktop and mobile. To obtain the channel ID, see https://wiki.discord.id/obtain-ids/desktop. In the "Beautiful Contact Cards" community plugin settings you can decide whether links open in your native client or a browser.
 
 ## Employment
 

@@ -40,10 +40,8 @@ export interface Contact {
 	email: string[];
 	insta: string[];
 	steam: string[];
-	beli: string[];
-	beliName: string[];
-	NSO: string[];
-	NSOfriendCode: string[];
+	beli: BeliAccount[];
+	NSO: NintendoSwitchOnlineAccount[];
 	discord: Discord[];
 	addresses: Address[];
 	currentEmployment: Employment | null;
@@ -51,8 +49,18 @@ export interface Contact {
 }
 
 export interface Discord {
-	handle: string;
-	dm_channel_id?: string;
+	username: string;
+	dmChannelId?: string;
+}
+
+export interface BeliAccount {
+	username: string;
+	displayName?: string;
+}
+
+export interface NintendoSwitchOnlineAccount {
+	displayName: string;
+	friendCode?: string;
 }
 
 export interface Employment {

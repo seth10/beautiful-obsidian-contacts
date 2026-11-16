@@ -179,29 +179,27 @@ export function buildContactCardEl(contact: Contact | null, settings: ContactCar
 		const steamDiv = contactCard.createDiv({ cls: 'contact-field', text: '👾 ' });
 		steamDiv.createEl('a', { href: steamProfileHref(steam), text: steam });
 	});
-	contact.beli.forEach((beli, index) => {
+	contact.beli.forEach(beli => {
 		const beliDiv = contactCard.createDiv({ cls: 'contact-field', text: '🍽️ ' });
-		beliDiv.createEl('a', { href: `https://beliapp.co/app/${beli}`, text: beli });
-		const beliName = contact.beliName[index];
-		if (beliName) {
-			beliDiv.appendText(` (${beliName})`);
+		beliDiv.createEl('a', { href: `https://beliapp.co/app/${beli.username}`, text: beli.username });
+		if (beli.displayName) {
+			beliDiv.appendText(` (${beli.displayName})`);
 		}
 	});
-	contact.NSO.forEach((nso, index) => {
-		const nsoDiv = contactCard.createDiv({ cls: 'contact-field', text: '🟥 ' + nso });
-		const friendCode = contact.NSOfriendCode[index];
-		if (friendCode) {
-			nsoDiv.createSpan({ cls: 'contact-nso-friend-code', text: ` (${friendCode})` });
+	contact.NSO.forEach(nso => {
+		const nsoDiv = contactCard.createDiv({ cls: 'contact-field', text: '🟥 ' + nso.displayName });
+		if (nso.friendCode) {
+			nsoDiv.createSpan({ cls: 'contact-nso-friend-code', text: ` (${nso.friendCode})` });
 		}
 	});
 	contact.discord.forEach(discord => {
-		if (discord.dm_channel_id) {
+		if (discord.dmChannelId) {
 			const discordDiv = contactCard.createDiv({ cls: 'contact-field', text: '🎮 ' });
 			discordDiv.createEl('a', {
-				href: (settings.discordClient ? 'discord://' : 'https://discord.com') + `/channels/@me/${discord.dm_channel_id}`,
-				text: discord.handle });
+				href: (settings.discordClient ? 'discord://' : 'https://discord.com') + `/channels/@me/${discord.dmChannelId}`,
+				text: discord.username });
 		} else {
-			contactCard.createDiv({ cls: 'contact-field', text: '🎮 ' + discord.handle });
+			contactCard.createDiv({ cls: 'contact-field', text: '🎮 ' + discord.username });
 		}
 	});
 	contact.addresses
