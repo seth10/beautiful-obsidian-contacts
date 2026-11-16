@@ -202,7 +202,13 @@ export function stringToNintendoSwitchOnlineAccount(text: string): NintendoSwitc
 }
 
 export function stringToDiscordAccount(text: string): Discord {
-	const [username, candidateDmChannelId] = splitAccountValue(text);
+	// Older Discord values may wrap the account pair in angle brackets, e.g. <username|12345>.
+	// Remove only a matching outer pair so angle brackets inside a username remain untouched.
+	const trimmed = text.trim();
+	const accountValue = trimmed.startsWith('<') && trimmed.endsWith('>')
+		? trimmed.slice(1, -1)
+		: trimmed;
+	const [username, candidateDmChannelId] = splitAccountValue(accountValue);
 	const dmChannelId = candidateDmChannelId && /^\d+$/.test(candidateDmChannelId)
 		? candidateDmChannelId
 		: undefined;
